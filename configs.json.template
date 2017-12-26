@@ -1,0 +1,23 @@
+{
+	"environment": "development",
+	"jwtSecret": "******************",
+	"sessionSecret": "*****************",
+	"linkedInAppID": "86si1hmxm82gf9",
+	"linkedInAppSecret": "****************",
+	"facebookAppID": "144772189413167",
+	"facebookAppSecret": "********************************",
+	"googleAppID": "**********************************************.apps.googleusercontent.com",
+	"googleAppSecret": "************************",
+	"googleEmail": "aegairsoft1@gmail.com",
+	"googleGmailAccessToken": "*********************************************************************************************************************************",
+	"googleGmailRefreshToken": "*********************************************",
+	"adminEmail": "aegairsoft1@gmail.com",
+	"adminNameFirst": "Josh",
+	"adminNameLast": "Bacon",
+	"adminPassword": "*******",
+	"serverPort": "",
+	"serverUrl": "https://portfolioapi.joshbacon.name",
+	"sitePort": "",
+	"siteUrl": "https://portfolio.joshbacon.name",
+	"mongoDbUrl": "mongodb://mongo_db:27017/portfolio"
+}

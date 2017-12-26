@@ -1,0 +1,39 @@
+{
+  "name": "ApiServer",
+  "version": "1.0.0",
+  "author": "Josh Bacon",
+  "description": "Node Express API Server for Josh Bacon's Public Portfolio Web App.",
+  "main": "./bin/www",
+  "scripts": {
+    "startDev": "node --inspect=localhost:9229 ./bin/www",
+    "startProd": "node ./bin/www"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "express": "latest",
+    "mongodb": "latest",
+    "winston": "latest",
+    "passport": "latest",
+    "body-parser": "latest",
+    "cookie-parser": "latest",
+    "debug": "latest",
+    "express-winston": "latest",
+    "serve-favicon": "latest",
+    "markdown": "latest",
+    "sanitize-html": "latest",
+    "passport-local": "latest",
+    "passport-jwt": "latest",
+    "passport-facebook-token": "latest",
+    "passport-google-token": "latest",
+    "passport-github-token": "latest",
+    "passport-linkedin-oauth2": "latest",
+    "validator": "latest",
+    "bcryptjs": "latest",
+    "nodemailer": "latest",
+    "apidoc": "latest",
+    "googleapis": "latest"
+  },
+  "devDependencies": {
+    "eslint": "latest"
+  }
+}

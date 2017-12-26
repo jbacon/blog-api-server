@@ -1,0 +1,51 @@
+version: '3'
+services:
+  api_server_node:
+    image: node:7.10.0-alpine
+    container_name: api_server_node
+    command: /bin/sh -c 'apk update; apk add git; cd /app/; npm install; npm run startDev;'
+    environment:
+      - PORTFOLIO_CONFIG_FILE=${PORTFOLIO_CONFIG_FILE}
+      # - PORTFOLIO_NODE_ENV
+      # - PORTFOLIO_JWT_SECRET
+      # - PORTFOLIO_ADMIN_EMAIL
+      # - PORTFOLIO_ADMIN_NAME_FIRST
+      # - PORTFOLIO_ADMIN_NAME_LAST
+      # - PORTFOLIO_ADMIN_PASSWORD
+      # - PORTFOLIO_SERVER_PORT
+      # - PORTFOLIO_SERVER_URL
+      # - PORTFOLIO_SITE_PORT
+      # - PORTFOLIO_SITE_URL
+      # - PORTFOLIO_MONGODB_URL
+      # - PORTFOLIO_FACEBOOOK_APP_ID
+      # - PORTFOLIO_FACEBOOK_APP_SECRET
+      # - PORTFOLIO_LINKEDIN_APP_SECRET
+      # - PORTFOLIO_LINKEDIN_APP_SECRET
+      # - PORTFOLIO_GOOGLE_APP_SECRET
+      # - PORTFOLIO_GOOGLE_APP_SECRET
+      # - PORTFOLIO_GOOGLE_GMAIL_ACCESS_TOKEN
+      # - PORTFOLIO_GOOGLE_GMAIL_REFRESH_TOKEN
+    ports:
+      - "9229:9229"
+      - "8080:3000"
+    volumes:
+      - ./:/app/
+    links:
+      - mongo_db
+  mongo_db:
+    image: mongo:3.5.6
+    command: mongod
+    container_name: mongo_db
+    volumes:
+      # - ./data/db:/data/db
+      - ./mongod.conf:/etc/mongod.conf
+    expose:
+     - "27017"
+  mongo_db_init:
+    image: mongo:3.5.6
+    command: mongo --nodb /mongo-setup.js
+    container_name: mongo_db_init
+    volumes:
+      - ./mongo-setup.js:/mongo-setup.js
+    links:
+      - mongo_db
