@@ -146,59 +146,35 @@ passport.use('local', new LocalStrategy(
 		password = decodeURIComponent(password)
 		mongoUtil.getDb()
 			.collection(Account.COLLECTION_NAME)
-			.find({
+			.findOne({
 				email: email
 			})
-			.toArray()
-			.then((results) => { return results.map((results) => { return Account.fromJSON(results) }) })
-			.then((accounts) => {
-				switch(accounts.length) {
-				case 1: { // FOUND
-					const account = Account.fromJSON(accounts[0])
-					if(account.passwordHashAndSalt) {
-						// Account has a local password (therefore it has been email verified)
-						return bcrypt.compare(password, account.passwordHashAndSalt)
-							.then((result) => {
-								if(!result) {
-									throw new CustomError({
-										message: 'Incorrect Password!',
-										status: 401
-									})
-								}
-								else {
-									return account
-								}
-							})
-					}
-					else {
-						if(account.facebookProfileID || account.googleProfileID) {
-							// Account does not have a local password BUT it has social account link.
-							throw new CustomError({
-								message: 'This account was registered via an external Social Media service, login using with the appropriate social account and then create separate/new login credentials for your account.',
-								status: 401
-							})
-						}
-						else {
-							throw new CustomError({
-								message: 'Account activation not completed! Check your email inbox for account activation steps.',
-								status: 401
-							})
-						}
-					}
-				}
-				case 0: { // NOT FOUND
+			.then((result) => {
+				if(!result)
 					throw new CustomError({
 						message: 'Account not found!',
 						status: 404
 					})
+				return Account.fromJSON(result)
+			})
+			.then((account) => {
+				if(account.passwordHashAndSalt) {
+					// Account has a local password (therefore it has been email verified)
+					return bcrypt.compare(password, account.passwordHashAndSalt)
+						.then((result) => {
+							if(!result)
+								throw new CustomError({
+									message: 'Incorrect Password!',
+									status: 401
+								})
+							return account
+						})
 				}
-				default: { // TOO MANY FOUND
-					throw new CustomError({
-						message: 'Too many accounts were found matching this email. Contact server admin.',
-						status: 500
-					})
-				}
-				}
+				// Account does not have a local password BUT it has social account link.
+				throw new CustomError({
+					message: 'This account was registered via an external Social Media service, login using with the appropriate social account and then create separate/new login credentials for your account.',
+					status: 401
+				})
 			})
 			.then((account) => {
 				next(null, account)
@@ -237,28 +213,25 @@ function(req, accessToken, refreshToken, profile, next) {
 		.catch(next)
 }))
 async function socialAuthencationHandler(socialProfileType, profile) {
-	// Social Profile might have multiple Email addresses associated with it...
-	// search for all accounts with ANY of the emails.
+	/*
+	1. Create new account if none exists
+	2. Verify existing account emails match
+	3. Update existing acccount social profile ID
+	4. Return account
+	*/
+	var account = null
 	const emailsList = (profile.emails && profile.emails.length > 0) ? profile.emails.map((item) => { return item.value }) : []
-	const resultsFind = await mongoUtil.getDb()
+	const existingAccount = await mongoUtil.getDb()
 		.collection(Account.COLLECTION_NAME)
-		.find({
+		.findOne({
 			$or: [
 				{ [socialProfileType+'ProfileID']: profile.id },
 				{ email: { $in: emailsList } } ]
 		})
-		.toArray()
-	var accounts = resultsFind.map((doc) => { return Account.fromJSON(doc) })
-	if(accounts.length > 1)
-		throw new CustomError({
-			message:`
-			This social profile has multiple email addresses which have match multiple existing accounts. 
-			This is an error, you should only have one account!
-			`,
-			status: 500,
-			obj: accounts
-		})
-	if(accounts.length === 0) {
+	if(existingAccount) {
+		account = Account.fromJSON(existingAccount)
+	}
+	else {
 		// CREATE NEW ACCOUNT
 		const newAccount = new Account({
 			[socialProfileType+'ProfileID']: profile.id,
@@ -269,47 +242,29 @@ async function socialAuthencationHandler(socialProfileType, profile) {
 		var resultsInsertOne = await mongoUtil.getDb()
 			.collection(Account.COLLECTION_NAME)
 			.insertOne(newAccount.toJSON({ includeSensitiveFields: ['email','passwordHashAndSalt'] }))
-		return Account.fromJSON(resultsInsertOne.ops[0])
+		account = Account.fromJSON(resultsInsertOne.ops[0])
 	}
-	// EXISTING ACCOUNT FOUND
-	const account = accounts[0]
-	// Check if Email & ProfileID match between my local account data & Social profile data.
-	if(account.email
-		&& emailsList.indexOf(account.email) !== -1
-		&& account.email === emailsList[emailsList.indexOf(account.email)]
-		&& account[socialProfileType+'ProfileID']
-		&& account[socialProfileType+'ProfileID'] === profile.id) {
-		// Full match
-		return account
-	}
-	else {
-		// Partial Match
-		if(!account[socialProfileType+'ProfileID']) {
-			// Email matched but missing ID, between Backend System & Social profile!
-			// Update System adding FacebookProfileID
-			account[socialProfileType+'ProfileID'] = profile.id
-			var resultsUpdateOne = await mongoUtil.getDb()
-				.collection(Account.COLLECTION_NAME)
-				.updateOne({
-					id: account._id
-				},
-				{
-					$set: {
-						[ socialProfileType+'ProfileID' ]: account[socialProfileType+'ProfileID']
-					}
-				})
-			return Account.fromJSON(resultsUpdateOne)
-		}
-		else {
-			// ID must have matched between Backend System & Social profile, but EMAIL is MIS-MATCHED!
-			throw new CustomError({
-				message: `This social profile matches an existing account by profile ID, 
-				but the emails do not match between accounts. 
-				This is an error, someone may be impresonating your social profile!
-				`,
-				status: 500,
-				obj: account
+	if(emailsList.indexOf(account.email) === -1)
+		throw new CustomError({
+			message: 'This social profile matches an existing account by profile ID, but the social profile\'s email list is empty.'
+		})
+	if(account.email !== emailsList[emailsList.indexOf(account.email)])
+		throw new CustomError({
+			message: 'This social profile matches an existing account by profile ID, but the email on record does not match any emails in the social profile\'s email list.'
+		})
+	if(account[socialProfileType+'ProfileID'] !== profile.id) {
+		account[socialProfileType+'ProfileID'] = profile.id
+		var resultsUpdateOne = await mongoUtil.getDb()
+			.collection(Account.COLLECTION_NAME)
+			.findOneAndUpdate({
+				_id: account._id
+			},
+			{
+				$set: {
+					[ socialProfileType+'ProfileID' ]: account[socialProfileType+'ProfileID']
+				}
 			})
-		}
+		account = Account.fromJSON(resultsUpdateOne.value)
 	}
+	return account
 }

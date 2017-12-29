@@ -113,7 +113,7 @@ router.post('/email/register/request', asyncWrap(async (req, res, next) => {
 router.post('/email/register/callback', asyncWrap(async (req, res, next) => {
 	const decodedToken = await authUtil.decodeToken(req.body.token)
 	var newAccount = Account.fromJSON(decodedToken.data)
-	var result = mongoUtil.getDb()
+	var result = await mongoUtil.getDb()
 		.collection(Account.COLLECTION_NAME)
 		.insertOne(newAccount.toJSON({ includeSensitiveFields: ['email','passwordHashAndSalt'] }))
 	req.user = Account.fromJSON(result.ops[0])

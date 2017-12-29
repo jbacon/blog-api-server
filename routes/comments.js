@@ -92,9 +92,14 @@ router.post('/create', asyncWrap(async (req, res, next) => {
 				</body>
 			</html>
 			`})
-		await emailUtil.sendEmail(email)
+		try{
+			await emailUtil.sendEmail(email)
+		}
+		catch(error) {
+			throw new CustomError('Comment created with errors.. failed to notify commenter of your reply.')
+		}
 	}
-	res.json({ data: await commentNew.toJSONIncludingVirtuals() })
+	res.json('Success, comment has been added')
 }))
 
 /**

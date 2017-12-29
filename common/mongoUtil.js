@@ -24,9 +24,9 @@ exports.configureDB = async () => {
 	await exports.getDb().ensureIndex('accounts', { email: 1 }, { unique: true })
 	await exports.getDb().ensureIndex('accounts', { googleProfileID: 1 }, { unique: true })
 	await exports.getDb().ensureIndex('accounts', { facebookProfileID: 1 }, { unique: true })
+	await exports.getDb().ensureIndex('accounts', { email: 1, nameFirst: 1, nameLast: 1 }, { })
 	await exports.getDb().ensureIndex('comments', { accountID: 1  }, { })
 	await exports.getDb().ensureIndex('comments', { entity: 1  }, { })
 	await exports.getDb().ensureIndex('comments', { parent: 1  }, { })
 	await exports.getDb().ensureIndex('comments', { ancestors: 1  }, { })
-	await exports.getDb().ensureIndex('accounts', { email: 1, nameFirst: 1, nameLast: 1 }, { })
 }

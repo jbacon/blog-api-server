@@ -16,24 +16,18 @@
     "passport": "latest",
     "body-parser": "latest",
     "cookie-parser": "latest",
-    "debug": "latest",
     "express-winston": "latest",
     "serve-favicon": "latest",
-    "markdown": "latest",
-    "sanitize-html": "latest",
     "passport-local": "latest",
     "passport-jwt": "latest",
     "passport-facebook-token": "latest",
     "passport-google-token": "latest",
-    "passport-github-token": "latest",
-    "passport-linkedin-oauth2": "latest",
     "validator": "latest",
     "bcryptjs": "latest",
-    "nodemailer": "latest",
-    "apidoc": "latest",
-    "googleapis": "latest"
+    "nodemailer": "latest"
   },
   "devDependencies": {
-    "eslint": "latest"
+    "eslint": "latest",
+    "apidoc": "latest"
   }
 }
