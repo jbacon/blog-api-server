@@ -1,5 +1,7 @@
 language: bash
-sudo: false
+sudo: required
+services:
+  - docker
 git:
   depth: 1
   submodules: false
@@ -7,6 +9,7 @@ branches:
   only:
   - master
 before_install:
+  - docker run --volume ${PWD}/:/app/ node:9.3.0-alpine bash -c 'cd /app/; npm run lint;'
   - sudo apt-get update -qq
 install: true
 before_script:

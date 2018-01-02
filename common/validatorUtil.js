@@ -24,6 +24,13 @@ exports.normalizeNull = function(val) {
 		status: 500
 	})
 }
+exports.isBool = function(val) {
+	if(typeof(val) === 'string') {
+		if(val.toLowerCase() === 'true') return true
+		if(val.toLowerCase() === 'false') return false
+	}
+	if(typeof(val) === 'boolean') return val
+}
 exports.normalizeBool = function(val) {
 	if(typeof(val) === 'string') {
 		if(val.toLowerCase() === 'true') return true

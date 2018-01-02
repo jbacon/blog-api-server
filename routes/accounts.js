@@ -80,17 +80,22 @@ router.get('/read', commonAuth.ensureAdmin, asyncWrap(async (req, res, next) => 
 router.post('/edit-details', commonAuth.ensureAuthenticated, asyncWrap(async (req, res, next) => {
 	if(!validator.isEmail(req.body.email))
 		throw new CustomError({
-			message: 'Value '+req.query.email+' for email is invalid...',
+			message: 'Value '+req.body.email+' for email is invalid...',
 			status: 400
 		})
 	if(!validator.isAlpha(req.body.nameFirst))
 		throw new CustomError({
-			message: 'Value '+req.query.nameFirst+' for nameFirst is invalid...',
+			message: 'Value '+req.body.nameFirst+' for nameFirst is invalid...',
 			status: 400
 		})
 	if(!validator.isAlpha(req.body.nameLast))
 		throw new CustomError({
-			message: 'Value '+req.query.nameLast+' for nameLast is invalid...',
+			message: 'Value '+req.body.nameLast+' for nameLast is invalid...',
+			status: 400
+		})
+	if(typeof req.body.notifyOnMyCommentReplies !== 'boolean')
+		throw new CustomError({
+			message: 'Value '+req.body.notifyOnMyCommentReplies+' for notifyOnMyCommentReplies is invalid...',
 			status: 400
 		})
 	var results = await mongoUtil.getDb()
@@ -103,11 +108,12 @@ router.post('/edit-details', commonAuth.ensureAuthenticated, asyncWrap(async (re
 				$set: {
 					email: validator.normalizeEmail(req.body.email),
 					nameFirst: req.body.nameFirst,
-					nameLast: req.body.nameLast
+					nameLast: req.body.nameLast,
+					notifyOnMyCommentReplies: req.body.notifyOnMyCommentReplies
 				}
 			}
 		)
-	res.json({ data: 'Account updated successfully' })
+	res.json('Account edited')
 }))
 
 router.post('/reset-password', commonAuth.ensureAuthenticated, asyncWrap(async (req, res, next) => {
@@ -146,6 +152,6 @@ router.post('/reset-password', commonAuth.ensureAuthenticated, asyncWrap(async (
 				}
 			}
 		)
-	res.json({ data: 'Password reset successfull' })
+	res.json('Password reset.')
 }))
 module.exports = router

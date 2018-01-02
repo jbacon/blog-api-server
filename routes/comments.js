@@ -40,7 +40,7 @@ router.post('/create', asyncWrap(async (req, res, next) => {
 			if(results) {
 				throw new CustomError({
 					status: 400,
-					message: 'The email you\'ve provided belongs to a verified account holder already, you cannot use this email to comment anonymously! Try logging in first.'
+					message: 'The email you\'ve provided belongs to a verified account holder already, you cannot use this email to comment anonymously! Try logging in.'
 				})
 			}
 	}
@@ -112,7 +112,7 @@ router.post('/create', asyncWrap(async (req, res, next) => {
 			}
 		}
 	}
-	res.json('Success, comment has been added')
+	res.json('Comment created.')
 }))
 
 /**
@@ -213,7 +213,7 @@ router.post('/down-vote', commonAuth.ensureAuthenticated, asyncWrap(async (req, 
 			message: 'Either you\'ve already down-voted this comment, comment does not exist, or comment has been removed',
 			status: 401
 		})
-	res.json({ data: results })
+	res.json('Comment down voted.')
 }))
 router.post('/up-vote', commonAuth.ensureAuthenticated, asyncWrap(async (req, res, next) => {
 	const results = await mongoUtil.getDb()
@@ -234,7 +234,7 @@ router.post('/up-vote', commonAuth.ensureAuthenticated, asyncWrap(async (req, re
 			message: 'Either you\'ve already up-voted this comment, comment does not exist, or comment has been removed',
 			status: 401
 		})
-	res.json({ data: results })
+	res.json('Comment up voted')
 }))
 router.post('/flag', commonAuth.ensureAuthenticated, asyncWrap(async (req, res, next) => {
 	const results = await mongoUtil.getDb()
@@ -255,7 +255,7 @@ router.post('/flag', commonAuth.ensureAuthenticated, asyncWrap(async (req, res, 
 			message: 'Either you\'ve already flagged this comment, comment does not exist, or comment has been removed',
 			status: 401
 		})
-	res.json({ data: results })
+	res.json('Comment flagged')
 }))
 router.post('/edit', commonAuth.ensureAuthenticated, asyncWrap(async (req, res, next) => {
 	const results = await mongoUtil.getDb()
@@ -279,7 +279,28 @@ router.post('/edit', commonAuth.ensureAuthenticated, asyncWrap(async (req, res, 
 			message: 'Either the comment could not be found in your account, has been removed, does not exist, or already has child comments (so edits are not allowed).',
 			status: 401
 		})
-	res.json('Success, comment text updated')
+	res.json('Comment text updated')
+}))
+router. post('/notify-on-reply', common.ensureAuthenticated, asyncWrap(async (req, res, next) => {
+	if(typeof req.body.notifyOnReply !== 'boolean')
+		throw new CustomError({
+			message: '"notifyOnReply" must be a boolean',
+			status: 400
+		})
+	const results = await mongoUtil.getDb()
+		.collection(COmment.COLLECTION_NAME)
+		.updateOne(
+			{
+				accountID: validatorUtil.normalizeID(req.user._id),
+				_id: validatorUtil.normalizeID(req.body._id),
+			},
+			{
+				$set: {
+					notifyOnReply: req.body.notifyOnReply
+				}
+			}
+		)
+	res.json('Comment notifications turned '+(req.body.notifyOnReply) ? 'on' : 'off')
 }))
 router.post('/mark-removed', commonAuth.ensureAuthenticated, asyncWrap(async (req, res, next) => {
 	const results = await mongoUtil.getDb()
@@ -291,7 +312,8 @@ router.post('/mark-removed', commonAuth.ensureAuthenticated, asyncWrap(async (re
 		},
 		{
 			$set: {
-				removed: validatorUtil.normalizeID(req.user._id)
+				removed: validatorUtil.normalizeID(req.user._id),
+				notifyOnReply: false
 			}
 		})
 	if(results.result.ok !== 1 || results.matchedCount === 0 || results.modifiedCount === 0)
@@ -299,7 +321,7 @@ router.post('/mark-removed', commonAuth.ensureAuthenticated, asyncWrap(async (re
 			message: 'Either the comment could not be found under your account, it has been removed, or does not exist.',
 			status: 401
 		})
-	res.json('Success, comment has been marked removed')
+	res.json('Comment marked for removal')
 }))
 
 module.exports = router
