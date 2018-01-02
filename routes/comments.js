@@ -1,5 +1,6 @@
 var express = require('express')
 var Comment = require('../model/comments')
+var Account = require('../model/accounts')
 var mongodb = require('mongodb')
 var mongoUtil = require('../common/mongoUtil')
 var commonAuth = require('../common/authUtil')
@@ -29,6 +30,20 @@ router.post('/create', asyncWrap(async (req, res, next) => {
 		nameLast: req.body.nameLast,
 		notifyOnReply: req.body.notifyOnReply
 	})
+	// Verify Email is not already an account
+	if(!isAuthenticated) {
+		const results = await mongoUtil.getDb()
+			.collection(Account.COLLECTION_NAME)
+			.findOne({
+				email: req.body.email
+			})
+			if(results) {
+				throw new CustomError({
+					status: 400,
+					message: 'The email you\'ve provided belongs to a verified account holder already, you cannot use this email to comment anonymously! Try logging in first.'
+				})
+			}
+	}
 	// Update Parent Comment's Child List w/ New Comment
 	var parentComment = null
 	if(commentNew.parent) {
@@ -54,49 +69,47 @@ router.post('/create', asyncWrap(async (req, res, next) => {
 		.insertOne(commentNew.toJSON({ includeSensitiveFields: ['email'] }))
 	commentNew = Comment.fromJSON(results.ops[0])
 	// Notify Parent Commenter via Email
-	if(parentComment
-		&& parentComment.notifyOnReply
-		&& (
-			!parentComment.account
-			|| parentComment.account.notifyOnMyCommentReplies)) {
-		const nameFirst = (parentComment.account) ? parentComment.account.nameFirst: parentComment.nameFirst
-		const nameLast = (parentComment.account) ? parentComment.account.nameLast : parentComment.nameLast
-		const queryString = ''
-		const fragment = ''
-		const conversationLink = configUtil.websiteURL+'/'+commentNew.entity+'?'+queryString+'#'+fragment
-		const email = new emailUtil.Email({
-			to: (parentComment.email) ? parentComment.email : parentComment.account.email,
-			from: 'aegairsoft1@gmail.com',
-			subject: 'Your Comment has a Reply',
-			text: undefined,
-			html: `
-			<html>
-				<body>
-					<p>
-						Hello ${nameFirst} ${nameLast},</br>
-						You've received a reply on your comment left on my tech blog (<a href='${configUtil.websiteURL}'>${configUtil.websiteURL}</a>).
-						</br>
-						</br>
-						View the conversation here:
-						</br>
-						<a href='${conversationLink}'>${conversationLink}</a>
-						</br>
-						</br>
-						This is an automated email but feel free to respond with any questions and I will get back to you personally!
-						</br>
-						</br>
-						Cheers,
-						</br>
-						Josh Bacon
-					</p>
-				</body>
-			</html>
-			`})
-		try{
-			await emailUtil.sendEmail(email)
-		}
-		catch(error) {
-			throw new CustomError('Comment created with errors.. failed to notify commenter of your reply.')
+	if(parentComment && parentComment.notifyOnReply) {
+		// Check account settings
+		if(!(await parentComment.account) || (await parentComment.account).notifyOnMyCommentReplies) {
+			const parentCommentEmail = (parentComment.email) ? parentComment.email : (await parentComment.account).email
+			const commentNewEmail = (commentNew.email) ? commentNew.email : (await commentNew.account).email
+			// Check if same emails
+			if(parentCommentEmail !== commentNewEmail) {
+				const nameFirst = (await parentComment.account) ? (await parentComment.account).nameFirst: parentComment.nameFirst
+				const nameLast = (await parentComment.account) ? (await parentComment.account).nameLast : parentComment.nameLast
+				const queryString = 'comment-jump='+encodeURIComponent(commentNew.ancestors.toString()+','+commentNew._id.toString())
+				const conversationLink = configUtil.websiteURL+commentNew.entity+'?'+queryString
+				const email = new emailUtil.Email({
+					to: parentCommentEmail,
+					from: configUtil.adminEmail,
+					subject: 'Your Comment has a Reply',
+					text: undefined,
+					html: `
+					<html>
+						<body>
+							<p>
+								Hello ${nameFirst} ${nameLast},</br>
+								You've received a reply on your comment left on my tech blog (<a href='${configUtil.websiteURL}'>${configUtil.websiteURL}</a>).
+								</br>
+								</br>
+								View the conversation here:
+								</br>
+								<a href='${conversationLink}'>${conversationLink}</a>
+								</br>
+								</br>
+								This is an automated email but feel free to respond with any questions and I will get back to you personally!
+								</br>
+								</br>
+								Cheers,
+								</br>
+								Josh Bacon
+							</p>
+						</body>
+					</html>
+					`})
+				emailUtil.sendEmail(email)
+			}
 		}
 	}
 	res.json('Success, comment has been added')

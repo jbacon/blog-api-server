@@ -60,7 +60,7 @@ exports.ensureAdmin = asyncWrap(async (req, res, next) => {
 	if(req.user.email !== commonConfig.adminEmail)
 		throw new CustomError({
 			message: 'Your account does not have administrative priviledges',
-			status: 401
+			status: 403
 		})
 	next()
 })
@@ -71,15 +71,15 @@ exports.ensureAuthenticated = asyncWrap(async (req, res, next) => {
 			(err, user, info) => {
 				if(err) {
 					reject(new CustomError({
-						message: 'JWT verification failed.',
+						message: 'Something went wrong',
 						status: 500,
 						err: err
 					}))
 				}
 				else if(!user) {
 					reject(new CustomError({
-						message: 'JWT invalid, no user match.',
-						statsu: 401,
+						message: 'Not Authorized',
+						status: 401,
 						err: info
 					}))
 				}
@@ -88,7 +88,7 @@ exports.ensureAuthenticated = asyncWrap(async (req, res, next) => {
 						if(err) {
 							reject(new CustomError({
 								message: 'JWT valid, but failed to login user',
-								statsu: 500,
+								status: 500,
 								err: err
 							}))
 						}
@@ -165,15 +165,15 @@ passport.use('local', new LocalStrategy(
 							if(!result)
 								throw new CustomError({
 									message: 'Incorrect Password!',
-									status: 401
+									status: 400
 								})
 							return account
 						})
 				}
 				// Account does not have a local password BUT it has social account link.
 				throw new CustomError({
-					message: 'This account was registered via an external Social Media service, login using with the appropriate social account and then create separate/new login credentials for your account.',
-					status: 401
+					message: 'This account registered via social media; it has no password. To login, use the appropriate social account and/or choose "Forgot Password" to be sent a "Set Password" link',
+					status: 400
 				})
 			})
 			.then((account) => {
@@ -246,10 +246,12 @@ async function socialAuthencationHandler(socialProfileType, profile) {
 	}
 	if(emailsList.indexOf(account.email) === -1)
 		throw new CustomError({
+			status: 500,
 			message: 'This social profile matches an existing account by profile ID, but the social profile\'s email list is empty.'
 		})
 	if(account.email !== emailsList[emailsList.indexOf(account.email)])
 		throw new CustomError({
+			status: 500,
 			message: 'This social profile matches an existing account by profile ID, but the email on record does not match any emails in the social profile\'s email list.'
 		})
 	if(account[socialProfileType+'ProfileID'] !== profile.id) {

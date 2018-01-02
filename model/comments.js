@@ -15,7 +15,7 @@ module.exports = class Comment extends Document {
 		this.entity = json.entity
 		this.children = json.children || []
 		this.ancestors = json.ancestors || []
-		this.parent = json.parent || null
+		this.parent = json.parent || undefined
 		this._parentComment = (json.parentComment) ? Comment.fromJSON(json.parentComment) : null
 		this.text = json.text
 		this.textEditDate = json.textEditDate || null
@@ -94,23 +94,57 @@ module.exports = class Comment extends Document {
 		return this._nameFirst
 	}
 	set nameFirst(val) {
-		if(val && this.accountID)
-			throw new CustomError({
-				message: 'Invalid nameFirst. You cannot set nameFirst when accountID has already been set to a value.',
-				status: 500
-			})
-		this._nameFirst = val
+		if(this.accountID) {
+			if(!validatorUtil.isValidNull(val))
+				throw new CustomError({
+					message: 'Invalid nameFirst. Must be null because AccountID has already been set.',
+					status: 500
+				})
+			this._nameFirst = validatorUtil.normalizeNull(val)
+		}
+		else {
+			if(validatorUtil.isValidNull(val)) {
+				throw new CustomError({
+					message: 'Invalid nameFirst. Cannot be null.',
+					status: 500
+				})
+			}
+			else if(!validator.isAlpha(val)) {
+				throw new CustomError({
+					message: 'Invalid nameFirst. Only alphabetic characters allowed.',
+					status: 500
+				})
+			}
+			this._nameFirst = val
+		}
 	}
 	get nameLast() {
 		return this._nameLast
 	}
 	set nameLast(val) {
-		if(val && this.accountID)
-			throw new CustomError({
-				message: 'Invalid nameLast. You cannot set nameLast when accountID has already been set to a value.',
-				status: 500
-			})
-		this._nameLast = val
+		if(this.accountID) {
+			if(!validatorUtil.isValidNull(val))
+				throw new CustomError({
+					message: 'Invalid nameLast. Must be null because AccountID has already been set.',
+					status: 500
+				})
+			this._nameLast = validatorUtil.normalizeNull(val)
+		}
+		else {
+			if(validatorUtil.isValidNull(val)) {
+				throw new CustomError({
+					message: 'Invalid nameLast. Cannot be null.',
+					status: 500
+				})
+			}
+			else if(!validator.isAlpha(val)) {
+				throw new CustomError({
+					message: 'Invalid nameLast. Only alphabetic characters allowed.',
+					status: 500
+				})
+			}
+			this._nameLast = val
+		}
 	}
 	get notifyOnReply() {
 		return this._notifyOnReply

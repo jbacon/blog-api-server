@@ -1,5 +1,8 @@
 var mongodb = require('mongodb')
 var CustomError = require('../common/errorUtil')
+var configUtil = require('../common/configUtil')
+var Account = require('../model/accounts')
+var bcrypt = require('bcryptjs')
 var mongoClient
 var dbContext
 
@@ -20,11 +23,11 @@ exports.getDb = () => {
 exports.configureDB = async () => {
 	if(!mongoClient) throw new CustomError({ message: 'Not connected.', status: 500 })
 	await exports.getDb().createCollection('accounts', { autoIndexId: true })
-	await exports.getDb().createCollection('comments', { autoIndexId: true })
 	await exports.getDb().ensureIndex('accounts', { email: 1 }, { unique: true })
-	await exports.getDb().ensureIndex('accounts', { googleProfileID: 1 }, { unique: true })
-	await exports.getDb().ensureIndex('accounts', { facebookProfileID: 1 }, { unique: true })
-	await exports.getDb().ensureIndex('accounts', { email: 1, nameFirst: 1, nameLast: 1 }, { })
+	await exports.getDb().ensureIndex('accounts', { googleProfileID: 1 }, { unique: true, sparse: true })
+	await exports.getDb().ensureIndex('accounts', { facebookProfileID: 1 }, { unique: true, sparse: true })
+	// await exports.getDb().ensureIndex('accounts', { email: 1, nameFirst: 1, nameLast: 1 }, { })
+	await exports.getDb().createCollection('comments', { autoIndexId: true })
 	await exports.getDb().ensureIndex('comments', { accountID: 1  }, { })
 	await exports.getDb().ensureIndex('comments', { entity: 1  }, { })
 	await exports.getDb().ensureIndex('comments', { parent: 1  }, { })

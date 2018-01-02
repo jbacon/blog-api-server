@@ -57,7 +57,7 @@ router.post('/email/register/request', asyncWrap(async (req, res, next) => {
 	if(results)
 		throw new CustomError({
 			message: 'Account with that email already exists!',
-			status: 500
+			status: 409
 		})
 	req.body.passwordHashAndSalt = bcrypt.hashSync(req.body.password, 10)
 	req.body.password = undefined
@@ -72,7 +72,7 @@ router.post('/email/register/request', asyncWrap(async (req, res, next) => {
 	const registrationUrl = configUtil.websiteURL+'/auth/email/register/callback#'+fragment
 	const email = new emailUtil.Email({
 		to: newAccount.email,
-		from: 'aegairsoft1@gmail.com',
+		from: configUtil.adminEmail,
 		subject: 'Account Registration',
 		text: undefined,
 		html: `
@@ -120,7 +120,7 @@ router.post('/email/register/callback', asyncWrap(async (req, res, next) => {
 	await respondWithToken(req, res, next)
 }))
 /* Request PasswordReset Email - Send email to specified address including a link w/ a temporary passwordreset token.*/
-router.post('/email/forgotpassword/request', asyncWrap(async (req, res, next) => {
+router.post('/email/password-reset/request', asyncWrap(async (req, res, next) => {
 	const results = await mongoUtil.getDb()
 		.collection(Account.COLLECTION_NAME)
 		.findOne({
@@ -133,12 +133,12 @@ router.post('/email/forgotpassword/request', asyncWrap(async (req, res, next) =>
 		})
 	const account = Account.fromJSON(results)
 	const user = account.toJSON({ includeSensitiveFields: ['email'] })
-	const token = await authUtil.createJwt(user)
+	const token = await authUtil.createJwt({ type: 'password-reset', user: user })
 	const fragment = 'token='+encodeURIComponent(token)
-	const passwordResetUrl = configUtil.websiteURL+'/auth/email/forgotpassword/callback#'+fragment
+	const passwordResetUrl = configUtil.websiteURL+'/auth/email/password-reset/callback#'+fragment
 	var email = new emailUtil.Email({
 		to: account.email,
-		from: 'aegairsoft1@gmail.com',
+		from: configUtil.adminEmail,
 		subject: 'Forgot Password? Please verify your request',
 		text: undefined,
 		html: `
@@ -167,22 +167,26 @@ router.post('/email/forgotpassword/request', asyncWrap(async (req, res, next) =>
 		`
 	})
 	await emailUtil.sendEmail(email)
-	res.json('Your temporary password reset link has been sent to your email adress: '+account.email)
+	res.json('A temporary password reset link has been sent to your email adress')
 }))
 /* Password Reset Email Callback
 1. Verify Reset Token.
 2. Generate new Password
 3. Reset Account Password
 4. Send Email w/ New Password */
-router.post('/email/forgotpassword/callback', asyncWrap(async (req, res, next) => {
+router.post('/email/password-reset/callback', asyncWrap(async (req, res, next) => {
 	const decodedToken = await authUtil.decodeToken(decodeURIComponent(req.body.token))
-	const account = Account.fromJSON(decodedToken.data)
-	const newPassword = await authUtil.generatePassword()
-	var newPasswordHashAndSalt = null
-	newPasswordHashAndSalt = bcrypt.hashSync(newPassword, 10)
-	var results = await mongoUtil.getDb()
+	if(decodedToken.data.type !== 'password-reset')
+		throw new CustomError({
+			message: 'The token provided is not the valid type.',
+			status: 403
+		})
+	const account = Account.fromJSON(decodedToken.data.user)
+	const newPassword = req.body.password
+	var newPasswordHashAndSalt = bcrypt.hashSync(newPassword, 10)
+	var result = await mongoUtil.getDb()
 		.collection(Account.COLLECTION_NAME)
-		.updateOne(
+		.findOneAndUpdate(
 			{
 				_id: validatorUtil.normalizeID(account._id)
 			},
@@ -192,42 +196,10 @@ router.post('/email/forgotpassword/callback', asyncWrap(async (req, res, next) =
 				}
 			}
 		)
-	if(results.modifiedCount !== 1)
-		throw new CustomError({
-			message: 'Failed to update account password',
-			status: 500
-		})
-	const email = new emailUtil.Email({
-		to: account.email,
-		from: 'aegairsoft1@gmail.com',
-		subject: 'Forgot Password? Here\'s your new password',
-		text: undefined,
-		html: `
-		<html>
-			<body>
-				<p>
-					Hello,</br>
-					You've requested a password reset on my blog website (<a href='${configUtil.websiteURL}'>${configUtil.websiteURL}</a>).
-					</br>
-					</br>
-					Here is your new password: ${newPassword}
-					</br>
-					</br>
-					This is an automated email, but feel free to respond with any questions and I will get back to you personally!
-					</br>
-					</br>
-					Cheers,
-					</br>
-					Josh Bacon
-				</p>
-			</body>
-		</html>
-		`
-	})
-	await emailUtil.sendEmail(email)
-	res.json('Your new password was been sent to your email')
+	req.user = Account.fromJSON(result.value)
+	await respondWithToken(req, res, next)
 }))
-/* Silently send a registration request Email to the specified Anonymous User
+	/* Silently send a registration request Email to the specified Anonymous User
 	containing a  callback link with a special JWT to the browser which will let the new User
 	enter a password can complete registration.
 	1. Create new Account Object
@@ -241,12 +213,12 @@ router.post('/email/silent-registration/request', asyncWrap(async (req, res, nex
 		nameLast: req.body.nameLast
 	})
 	const user = newAccount.toJSON({ includeSensitiveFields: ['email'] })
-	const token = await authUtil.createJwt(user)
+	const token = await authUtil.createJwt({ type: 'silent-registration', user: user })
 	const fragment = 'token='+encodeURIComponent(token)
 	const silentRegistrationLink = configUtil.websiteURL+'/auth/email/silent-registration/callback#'+fragment
 	const email = new emailUtil.Email({
 		to: newAccount.email,
-		from: 'aegairsoft1@gmail.com',
+		from: configUtil.adminEmail,
 		subject: 'Hello',
 		text: undefined,
 		html: `
@@ -273,7 +245,7 @@ router.post('/email/silent-registration/request', asyncWrap(async (req, res, nex
 		`
 	})
 	await emailUtil.sendEmail(email)
-	res.json('Successfully sent registration link to your email')
+	res.json('A temporary registration link has been sent to your email')
 }))
 /* Callback for completing silent-registration by verifying special silent-registration auth token
 	and the new user's password which allwos us to create a new account and send JWT back to user.
@@ -287,7 +259,12 @@ router.post('/email/silent-registration/request', asyncWrap(async (req, res, nex
 	*/
 router.post('/email/silent-registration/callback', asyncWrap(async (req, res, next) => {
 	const decodedToken = await authUtil.decodeToken(decodeURIComponent(req.body.token))
-	var newAccount = Account.fromJSON(decodedToken.data)
+	if(decodedToken.data.type !== 'silent-registration')
+		throw new CustomError({
+			message: 'The token provided is not the valid type.',
+			status: 403
+		})
+	var newAccount = Account.fromJSON(decodedToken.data.user)
 	if(!validator.isAlphanumeric(req.body.password))
 		throw new CustomError({
 			message: 'New password should be alphanumeric...',

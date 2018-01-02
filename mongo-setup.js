@@ -1,4 +1,4 @@
-connection = new Mongo('mongodb://mongo_db:27017')
+connection = new Mongo('mongodb://db:27017')
 db = connection.getDB('admin')
 db.dropUser('admin');
 db.createUser(

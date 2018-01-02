@@ -2,6 +2,7 @@ var Document = require('../model/document')
 var validatorUtil = require('../common/validatorUtil')
 var CustomError = require('../common/errorUtil')
 var validator = require('validator')
+var configUtil = require('../common/configUtil')
 
 module.exports = class Account extends Document {
 	static get COLLECTION_NAME() {
@@ -50,7 +51,7 @@ module.exports = class Account extends Document {
 		}
 	}
 	get isAdmin() {
-		if(this._email === 'jbacon@zagmail.gonzaga.edu' || this._email === 'aegairsoft1@gmail.com')
+		if(this._email === configUtil.adminEmail)
 			return true
 		else
 			return false

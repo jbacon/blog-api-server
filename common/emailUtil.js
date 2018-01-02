@@ -2,6 +2,7 @@ const nodemailer = require('nodemailer')
 var configUtil = require('../common/configUtil')
 var validator = require('validator')
 var CustomError = require('../common/errorUtil')
+var logger = require('../common/loggingUtil').appLogger
 
 exports.transporter = nodemailer.createTransport({
 	// service: 'gmail',
@@ -10,7 +11,7 @@ exports.transporter = nodemailer.createTransport({
 	secure: true,
 	auth: {
 		type: 'OAuth2',
-		user: 'aegairsoft1@gmail.com',
+		user: configUtil.adminEmail,
 		clientId: configUtil.googleAppID,
 		clientSecret: configUtil.googleAppSecret,
 		refreshToken: configUtil.googleGmailRefreshToken,
@@ -19,12 +20,7 @@ exports.transporter = nodemailer.createTransport({
 	}
 })
 exports.transporter.on('token', token => {
-	var derp = 'asdf'
-	// console.log('A new access token was generated')
-	// console.log('User: %s', token.user)
-	// console.log('Access Token: %s', token.accessToken)
-	// console.log('Refresh Token: %s', token.refreshToken);
-	// console.log('Expires: %s', new Date(token.expires))
+	logger.info('A new access token was generated for nodemailer transporter using the refresh token.')
 })
 exports.sendEmail = async function(email) {
 	try {

@@ -46,25 +46,18 @@ app.use(asyncWrap(async (req, res, next) => {
 	})
 }))
 // ERROR LOGGING (AFTER routers BEFORE handlers)
-app.use(commonLogging.routerLoggingMiddleware)
+app.use(commonLogging.errorLoggingMiddleware)
 // ERROR HANDLERS
-if (commonConfig.environment == commonConfig.ENVIRONMENTS.DEV) {
-	app.use(function(err, req, res, next) {
-		res.status(err.status || 500)
-		res.send({
-			status: err.status || 500,
-			message: err.message || 'No message...',
-			stack: err.stack || 'No stack trace..'
-		})
-	})
-}
-else {
-	app.use(function(err, req, res, next) {
-		res.status(err.status || 500)
-		res.send({
-			status: err.status || 500,
-			message: err.message || 'No message...'
-		})
-	})
-}
+app.use(function(err, req, res, next) {
+	commonLogging.appLogger.error(err)
+	res.status(err.status || 500)
+	var response = null
+	if(commonConfig.environment === commonConfig.ENVIRONMENTS.DEV) {
+		response = err.message+'\nStack: '+err.stack
+	}
+	else {
+		response = err.message
+	}
+	res.send(response)
+})
 module.exports = app

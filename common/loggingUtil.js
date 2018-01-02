@@ -1,39 +1,64 @@
 var winston = require('winston')
 var expressWinston = require('express-winston')
 
-exports.logger = new (winston.Logger) ( {
+exports.appLogger = new (winston.Logger) ( {
 	transports: [
-		new (winston.transports.Console) ({
+		new (winston.transports.File) ({
 			json: true,
+			colorize: true,
+			level: 'info',
+			filename: 'logs/app.log',
+			maxsize: 2000000,
+			maxFiles: 10,
+			tailable: true
+		}),
+		new (winston.transports.Console) ({
+			json: false,
 			colorize: true,
 			level: 'info'
 		})
 	]
 })
-
 exports.requestLoggingMiddleware = expressWinston.logger({
-	winstonInstance: exports.logger,
+	winstonInstance: new (winston.Logger) ( {
+		transports: [
+			new (winston.transports.File) ({
+				json: true,
+				colorize: true,
+				level: 'info',
+				filename: 'logs/requests.log',
+				maxsize: 2000000,
+				maxFiles: 10,
+				tailable: true
+			})
+		]
+	}),
 	meta: true, // optional: control whether you want to log the meta data about the request (default to true)
 	expressFormat: true, // Use the default Express/morgan request formatting. Enabling this will override any msg if true. Will only output colors with colorize set to true
 	colorize: true, // Color the text and status code, using the Express/morgan color palette (text: gray, status: default green, 3XX cyan, 4XX yellow, 5XX red).
-	requestFilter: function (req, propName) {
-		if(propName == 'headers') {
-			const headers = Object.assign({}, req[propName])
-			delete headers['authorization']
-			return headers
-		}
-		return req[propName]
-	}
+	requestFilter: requestFilter
 })
-
-exports.routerLoggingMiddleware = expressWinston.errorLogger({
-	winstonInstance: exports.logger,
-	requestFilter: function (req, propName) {
-		if(propName == 'headers') {
-			const headers = Object.assign({}, req[propName])
-			delete headers['authorization']
-			return headers
-		}
-		return req[propName]
-	}
+exports.errorLoggingMiddleware = expressWinston.errorLogger({
+	winstonInstance: new (winston.Logger) ( {
+		transports: [
+			new (winston.transports.File) ({
+				json: true,
+				colorize: true,
+				level: 'info',
+				filename: 'logs/errors.log',
+				maxsize: 2000000,
+				maxFiles: 10,
+				tailable: true
+			})
+		]
+	}),
+	requestFilter: requestFilter
 })
+function requestFilter(req, propName) {
+	if(propName == 'headers') {
+		const headers = Object.assign({}, req[propName])
+		delete headers['authorization']
+		return headers
+	}
+	return req[propName]
+}

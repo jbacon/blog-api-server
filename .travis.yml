@@ -1,0 +1,21 @@
+language: bash
+sudo: false
+git:
+  depth: 1
+  submodules: false
+branches:
+  only:
+  - master
+before_install:
+  - sudo apt-get update -qq
+install: true
+before_script:
+script:
+before_cache:
+after_success:
+after_failure:
+before_deploy:
+deploy:
+  skip_cleanup: true
+after_deploy:
+after_script:

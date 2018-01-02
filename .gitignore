@@ -3,3 +3,4 @@ node_modules/
 configs-dev.json
 configs-prod.json
 data/
+logs/

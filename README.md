@@ -1,11 +1,6 @@
 # Blog Website API Server:
 
-My blog website API server used by my static site (via CORS) to interact with my persistant Database Layer.
-Comments and Accounts are stored to my MongoDB via this API server.
+My blog's public API server built with [NodeJs](https://nodejs.org/en/), [ExpressJS](https://expressjs.com/), & [MongoDB](https://www.mongodb.com/)
+Handles Comments, Users, Authentication, Emails, & More.
 
-[NodeJs](https://nodejs.org/en/) & [ExpressJS](https://expressjs.com/)
-
-## Linting
-```bash
-eslint --fix ./
-```
+[https://portfolioapi.joshbacon.name](https://portfolioapi.joshbacon.name)
