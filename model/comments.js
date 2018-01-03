@@ -24,7 +24,7 @@ module.exports = class Comment extends Document {
 		this.email = json.email || null
 		this.nameFirst = json.nameFirst || null
 		this.nameLast = json.nameLast || null
-		this.notifyOnReply = json.notifyOnReply || true
+		this.notifyOnReply = json.notifyOnReply
 		this.upVoteAccountIDs = json.upVoteAccountIDs || []
 		this.downVoteAccountIDs = json.downVoteAccountIDs || []
 		this.flags = json.flags || []
@@ -150,7 +150,9 @@ module.exports = class Comment extends Document {
 		return this._notifyOnReply
 	}
 	set notifyOnReply(val) {
-		this._notifyOnReply = validatorUtil.normalizeBool(val)
+		if(typeof val !== 'boolean')
+			throw new CustomError('Invalid value for notifyOnReply, must be type of boolean.')
+		this._notifyOnReply = val
 	}
 	get entity() {
 		return this._entity

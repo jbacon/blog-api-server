@@ -281,14 +281,14 @@ router.post('/edit', commonAuth.ensureAuthenticated, asyncWrap(async (req, res, 
 		})
 	res.json('Comment text updated')
 }))
-router. post('/notify-on-reply', common.ensureAuthenticated, asyncWrap(async (req, res, next) => {
+router.post('/notify-on-reply', commonAuth.ensureAuthenticated, asyncWrap(async (req, res, next) => {
 	if(typeof req.body.notifyOnReply !== 'boolean')
 		throw new CustomError({
 			message: '"notifyOnReply" must be a boolean',
 			status: 400
 		})
 	const results = await mongoUtil.getDb()
-		.collection(COmment.COLLECTION_NAME)
+		.collection(Comment.COLLECTION_NAME)
 		.updateOne(
 			{
 				accountID: validatorUtil.normalizeID(req.user._id),
