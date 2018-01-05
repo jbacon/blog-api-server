@@ -1,7 +1,6 @@
 var mongoUtil = require('../common/mongoUtil')
 var Document = require('../model/document')
 var Account = require('../model/accounts')
-var validatorUtil = require('../common/validatorUtil')
 var validator = require('validator')
 var CustomError = require('../common/errorUtil')
 
@@ -12,23 +11,23 @@ module.exports = class Comment extends Document {
 	constructor(json) {
 		// Set Default & Initials
 		super(json)
-		this.entity = json.entity
-		this.children = json.children || []
-		this.ancestors = json.ancestors || []
-		this.parent = json.parent || undefined
-		this._parentComment = (json.parentComment) ? Comment.fromJSON(json.parentComment) : null
-		this.text = json.text
-		this.textEditDate = json.textEditDate || null
-		this.accountID = json.accountID || null
-		this._account = (json.account) ? Account.fromJSON(json.account) : null
-		this.email = json.email || null
-		this.nameFirst = json.nameFirst || null
-		this.nameLast = json.nameLast || null
-		this.notifyOnReply = json.notifyOnReply
-		this.upVoteAccountIDs = json.upVoteAccountIDs || []
-		this.downVoteAccountIDs = json.downVoteAccountIDs || []
-		this.flags = json.flags || []
-		this.removed = json.removed || null
+		this.entity 						= json.entity
+		this.children 					= (typeof json.children 					!== 'undefined') ? json.children 												: []
+		this.ancestors 					= (typeof json.ancestors 					!== 'undefined') ? json.ancestors 											: []
+		this.parent 						= (typeof json.parent 						!== 'undefined') ? json.parent 													: null
+		this._parentComment 		= (typeof json.parentComment 			!== 'undefined') ? Comment.fromJSON(json.parentComment) : null
+		this.text 							= json.text
+		this.textEditDate 			= (typeof json.textEditDate 			!== 'undefined') ? json.textEditDate 										: null
+		this.accountID 					= (typeof json.accountID 					!== 'undefined') ? json.accountID 											: null
+		this._account 					= (typeof json.account 						!== 'undefined') ? Account.fromJSON(json.account) 			: null
+		this.email 							= (typeof json.email 							!== 'undefined') ? json.email 													: null
+		this.nameFirst 					= (typeof json.nameFirst 					!== 'undefined') ? json.nameFirst 											: null
+		this.nameLast 					= (typeof json.nameLast 					!== 'undefined') ? json.nameLast 												: null
+		this.notifyOnReply 			= (typeof json.notifyOnReply			!== 'undefined') ? json.notifyOnReply 									: true
+		this.upVoteAccountIDs 	= (typeof json.upVoteAccountIDs  	!== 'undefined') ? json.upVoteAccountIDs 								: []
+		this.downVoteAccountIDs = (typeof json.downVoteAccountIDs !== 'undefined') ? json.downVoteAccountIDs 							: []
+		this.flags 							= (typeof json.flags 							!== 'undefined') ? json.flags 													: []
+		this.removed 						= (typeof json.removed  					!== 'undefined') ? json.removed 												: null
 	}
 	get accountID() {
 		return this._accountID
@@ -39,7 +38,7 @@ module.exports = class Comment extends Document {
 				message:'Invalid accountID. You cannot set accountID when any one of: email, nameFirst, or nameLast... have already been set to values.',
 				status: 400
 			})
-		this._accountID = validatorUtil.normalizeID(val, { allowNullable: true })
+		this._accountID = mongoUtil.normalizeID(val, { allowNullable: true })
 	}
 	// Virtual Account
 	get account() {
@@ -73,78 +72,91 @@ module.exports = class Comment extends Document {
 		return this._textEditDate
 	}
 	set textEditDate(val) {
-		this._textEditDate = validatorUtil.normalizeDate(val, { allowNullable: true })
+		var result = null
+		if(val !== null)
+			result = new Date(val)
+		this._textEditDate = result
 	}
 	get email() {
 		return this._email
 	}
 	set email(val) {
-		if(this.accountID && !validatorUtil.isValidNull(val)) {
+		const normalized = Comment.emailNormalizer(val)
+		if(this.accountID && normalized)
 			throw new CustomError({
-				message: 'Invalid email. You cannot set email when accountID has already been set to a value.',
+				message: 'Invalid email. Must be null because AccountID has already been set.',
 				status: 500
 			})
-		}
-		if(validatorUtil.isValidNull(val))
-			this._email = validatorUtil.normalizeNull(val)
-		else
-			this._email = validator.normalizeEmail(val)
+		if(!this.accountID && !normalized)
+			throw new CustomError({
+				message: 'Invalid email. Cannot be null when AccountID is also null.',
+				status: 500
+			})
+		this._email = normalized
+	}
+	static emailNormalizer(val) {
+		if(val !== null && !validator.isEmail(val))
+			throw new CustomError({
+				message: 'Invalid email. Must be either null or valid email address.',
+				status: 400
+			})
+		if(val === null)
+			return null
+		return validator.normalizeEmail(val)
 	}
 	get nameFirst() {
 		return this._nameFirst
 	}
 	set nameFirst(val) {
-		if(this.accountID) {
-			if(!validatorUtil.isValidNull(val))
-				throw new CustomError({
-					message: 'Invalid nameFirst. Must be null because AccountID has already been set.',
-					status: 500
-				})
-			this._nameFirst = validatorUtil.normalizeNull(val)
-		}
-		else {
-			if(validatorUtil.isValidNull(val)) {
-				throw new CustomError({
-					message: 'Invalid nameFirst. Cannot be null.',
-					status: 500
-				})
-			}
-			else if(!validator.isAlpha(val)) {
-				throw new CustomError({
-					message: 'Invalid nameFirst. Only alphabetic characters allowed.',
-					status: 500
-				})
-			}
-			this._nameFirst = val
-		}
+		const normalized = Comment.nameFirstNormalizer(val)
+		if(this.accountID && normalized)
+			throw new CustomError({
+				message: 'Invalid nameFirst. Must be null because AccountID has already been set.',
+				status: 500
+			})
+		if(!this.accountID && !normalized)
+			throw new CustomError({
+				message: 'Invalid nameFirst. Cannot be null when AccountID is also null.',
+				status: 500
+			})
+		this._nameFirst = normalized
+	}
+	static nameFirstNormalizer(val) {
+		if(val !== null && typeof val !== 'string' && validator.isAlpha(val))
+			throw new CustomError({
+				message: 'Invalid nameFist. Must be either null or alphabetic string.',
+				status: 400
+			})
+		if(val === null)
+			return null
+		return val.toUpperCase()
 	}
 	get nameLast() {
 		return this._nameLast
 	}
 	set nameLast(val) {
-		if(this.accountID) {
-			if(!validatorUtil.isValidNull(val))
-				throw new CustomError({
-					message: 'Invalid nameLast. Must be null because AccountID has already been set.',
-					status: 500
-				})
-			this._nameLast = validatorUtil.normalizeNull(val)
-		}
-		else {
-			if(validatorUtil.isValidNull(val)) {
-				throw new CustomError({
-					message: 'Invalid nameLast. Cannot be null.',
-					status: 500
-				})
-			}
-			else if(!validator.isAlpha(val)) {
-				throw new CustomError({
-					message: 'Invalid nameLast. Only alphabetic characters allowed.',
-					status: 500
-				})
-			}
-			this._nameLast = val
-		}
+		const normalized = Comment.nameLastNormalizer(val)
+		if(this.accountID && normalized)
+			throw new CustomError({
+				message: 'Invalid nameLast. Must be null because AccountID has already been set.',
+				status: 500
+			})
+		if(!this.accountID && !normalized)
+			throw new CustomError({
+				message: 'Invalid nameLast. Cannot be null when AccountID is also null.',
+				status: 500
+			})
+		this._nameLast = normalized
+	}
+	static nameLastNormalizer(val) {
+		if(val !== null && typeof val !== 'string' && validator.isAlpha(val))
+			throw new CustomError({
+				message: 'Invalid nameLast. Must be either null or alphabetic string.',
+				status: 400
+			})
+		if(val === null)
+			return null
+		return val.toUpperCase()
 	}
 	get notifyOnReply() {
 		return this._notifyOnReply
@@ -158,19 +170,53 @@ module.exports = class Comment extends Document {
 		return this._entity
 	}
 	set entity(val) {
-		this._entity = validatorUtil.normalizeEntity(val, { allowNullable: true })
+		this._entity = Comment.entityNormalizer(val)
+	}
+	static entityVerifier(val) {
+		if(!validator.isURL(val, {
+			protocols: ['http','https','ftp'],
+			require_tld: false,
+			require_protocol: false,
+			require_host: false,
+			require_valid_protocol: false,
+			allow_underscores: false,
+			host_whitelist: false,
+			host_blacklist: false,
+			allow_trailing_dot: false,
+			allow_protocol_relative_urls: false
+		}))
+			throw new CustomError({
+				message: 'Invalid entity value, must be a URL.',
+				status: 500
+			})
+		return val
+	}
+	static entityNormalizer(val) {
+		const verified = Comment.entityVerifier(val)
+		return verified.toLowerCase()
 	}
 	get parent() {
 		return this._parent
 	}
 	set parent(val) {
-		const temp = validatorUtil.normalizeID(val, { allowNullable: true })
-		if(temp && this.ancestors.length > 0 && !temp.equals(this.ancestors[this.ancestors.length - 1]))
+		const temp = (val === null) ? null : Comment.parentNormalizer(val)
+		if(temp && this.ancestors.length > 0 && !temp.equals(this.ancestors[this.ancestors.length -1 ]))
 			throw new CustomError({
 				message: 'Invalid parent value. Parent was not present on the end of the ancestor list.',
 				status: 500
 			})
 		this._parent = temp
+	}
+	static parentVerifier(val) {
+		if(!mongoUtil.isValidID(val, { allowNullable: true }))
+			throw new CustomError({
+				message: 'Invalid parent value, must be a mongo ID.',
+			})
+		return val
+	}
+	static parentNormalizer(val) {
+		const verified = Comment.parentVerifier(val)
+		return mongoUtil.normalizeID(verified, { allowNullable: true })
 	}
 	// Virtual Parent Comment
 	get parentComment() {
@@ -198,37 +244,37 @@ module.exports = class Comment extends Document {
 		return this._upVoteAccountIDs
 	}
 	set upVoteAccountIDs(val) {
-		this._upVoteAccountIDs = validatorUtil.normalizeArrayIDs(val)
+		this._upVoteAccountIDs = mongoUtil.normalizeArrayIDs(val)
 	}
 	get downVoteAccountIDs() {
 		return this._downVoteAccountIDs
 	}
 	set downVoteAccountIDs(val) {
-		this._downVoteAccountIDs = validatorUtil.normalizeArrayIDs(val)
+		this._downVoteAccountIDs = mongoUtil.normalizeArrayIDs(val)
 	}
 	get flags() {
 		return this._flags
 	}
 	set flags(val) {
-		this._flags = validatorUtil.normalizeArrayIDs(val)
+		this._flags = mongoUtil.normalizeArrayIDs(val)
 	}
 	get removed() {
 		return this._removed
 	}
 	set removed(val) {
-		this._removed = validatorUtil.normalizeID(val, { allowNullable: true })
+		this._removed = mongoUtil.normalizeID(val, { allowNullable: true })
 	}
 	get children() {
 		return this._children
 	}
 	set children(val) {
-		this._children = validatorUtil.normalizeArrayIDs(val)
+		this._children = mongoUtil.normalizeArrayIDs(val)
 	}
 	get ancestors() {
 		return this._ancestors
 	}
 	set ancestors(val) {
-		const temp = validatorUtil.normalizeArrayIDs(val)
+		const temp = mongoUtil.normalizeArrayIDs(val)
 		if(this.parent && temp.length < 1)
 			throw new CustomError({
 				message: 'Invalid ancestors list. Ancestors is empty but parent is not.',

@@ -1,12 +1,12 @@
 var express = require('express')
 var mongoUtil = require('../common/mongoUtil')
 var Account = require('../model/accounts')
-var validatorUtil = require('../common/validatorUtil')
 var commonAuth = require('../common/authUtil')
 var CustomError = require('../common/errorUtil')
 var bcrypt = require('bcryptjs')
 var validator = require('validator')
 var asyncWrap = require('../common/asyncUtil').asyncWrap
+const logger = require('../common/loggingUtil').appLogger
 var router = express.Router()
 
 /**
@@ -102,7 +102,7 @@ router.post('/edit-details', commonAuth.ensureAuthenticated, asyncWrap(async (re
 		.collection(Account.COLLECTION_NAME)
 		.updateOne(
 			{
-				_id: validatorUtil.normalizeID(req.user._id)
+				_id: mongoUtil.normalizeID(req.user._id)
 			},
 			{
 				$set: {
@@ -145,7 +145,7 @@ router.post('/reset-password', commonAuth.ensureAuthenticated, asyncWrap(async (
 	var resultsUpdateOne = await mongoUtil.getDb()
 		.collection(Account.COLLECTION_NAME)
 		.updateOne(
-			{ _id: validatorUtil.normalizeID(req.user._id) },
+			{ _id: mongoUtil.normalizeID(req.user._id) },
 			{
 				$set: {
 					passwordHashAndSalt: newPasswordHashAndSalt

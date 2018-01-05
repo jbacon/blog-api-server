@@ -1,5 +1,5 @@
 var Document = require('../model/document')
-var validatorUtil = require('../common/validatorUtil')
+var mongoUtil = require('../common/mongoUtil')
 var CustomError = require('../common/errorUtil')
 var validator = require('validator')
 var configUtil = require('../common/configUtil')
@@ -10,16 +10,16 @@ module.exports = class Account extends Document {
 	}
 	constructor(json) {
 		super(json)
-		this.email 											= json.email
-		this.nameFirst 									= json.nameFirst
-		this.nameLast 									= json.nameLast
-		this.passwordHashAndSalt 				= json.passwordHashAndSalt 			|| null
-		this.facebookProfileID 					= json.facebookProfileID 				|| null
-		this.googleProfileID 						= json.googleProfileID 					|| null
-		this.dateLastAuthenticated 			= json.dateLastAuthenticated 		|| new Date()
-		this.notifyOnMyCommentReplies 	= json.notifyOnMyCommentReplies || true
-		this.notifyOnNewArticles 				= json.notifyOnNewArticles 			|| true
-		this.followingComments 					= json.followingComments 				|| []
+		this.email 											= (typeof json.email 										!== 'undefined') ? json.email 										: null
+		this.nameFirst 									= (typeof json.nameFirst 								!== 'undefined') ? json.nameFirst 								: null
+		this.nameLast 									= (typeof json.nameLast 								!== 'undefined') ? json.nameLast 									: null
+		this.passwordHashAndSalt 				= (typeof json.passwordHashAndSalt 			!== 'undefined') ? json.passwordHashAndSalt 			: null
+		this.facebookProfileID 					= (typeof json.facebookProfileID 				!== 'undefined') ? json.facebookProfileID 				: null
+		this.googleProfileID 						= (typeof json.googleProfileID 					!== 'undefined') ? json.googleProfileID 					: null
+		this.dateLastAuthenticated 			= (typeof json.dateLastAuthenticated 		!== 'undefined') ? json.dateLastAuthenticated 		: new Date()
+		this.notifyOnMyCommentReplies 	= (typeof json.notifyOnMyCommentReplies !== 'undefined') ? json.notifyOnMyCommentReplies 	: true
+		this.notifyOnNewArticles 				= (typeof json.notifyOnNewArticles 			!== 'undefined') ? json.notifyOnNewArticles 			: false
+		this.followingComments 					= (typeof json.followingComments 				!== 'undefined') ? json.followingComments 				: []
 	}
 	get facebookProfileID() {
 		return this._facebookProfileID
@@ -92,19 +92,29 @@ module.exports = class Account extends Document {
 		return this._notifyOnMyCommentReplies
 	}
 	set notifyOnMyCommentReplies(val) {
-		this._notifyOnMyCommentReplies = validatorUtil.normalizeBool(val)
+		if(typeof val !== 'boolean')
+			throw new CustomError({
+				message: 'Invalid entry for notifyOnMyCommentReplies, must be a boolean',
+				status: 500
+			})
+		this._notifyOnMyCommentReplies = val
 	}
 	get followingComments() {
 		return this._followingComments
 	}
 	set followingComments(val) {
-		this._followingComments = validatorUtil.normalizeArrayIDs(val)
+		this._followingComments = mongoUtil.normalizeArrayIDs(val)
 	}
 	get notifyOnNewArticles() {
 		return this._notifyOnNewArticles
 	}
 	set notifyOnNewArticles(val) {
-		this._notifyOnNewArticles = validatorUtil.normalizeBool(val)
+		if(typeof val !== 'boolean')
+			throw new CustomError({
+				message: 'Invalid entry for notifyOnMyCommentReplies, must be a boolean',
+				status: 500
+			})
+		this._notifyOnNewArticles = val
 	}
 	get passwordHashAndSalt() {
 		return this._passwordHashAndSalt

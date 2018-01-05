@@ -33,3 +33,52 @@ exports.configureDB = async () => {
 	await exports.getDb().ensureIndex('comments', { parent: 1  }, { })
 	await exports.getDb().ensureIndex('comments', { ancestors: 1  }, { })
 }
+/* return bool (assumes normalized already) */
+exports.isValidID = function(val, { allowNullable=false }={}) {
+	try {
+		exports.normalizeID(val, { allowNullable: allowNullable })
+		return true
+	}
+	catch(err) {
+		return false
+	}
+}
+exports.validateID = function(val, { allowNullable=false }={}) {
+	exports.normalizeID(val, { allowNullable: allowNullable })
+	return val
+}
+/* return value or throw error if no convertable */
+exports.normalizeID = function(val, { allowNullable=false }={}) {
+	if(allowNullable && val === null)
+		return null
+	else if(val instanceof mongodb.ObjectID)
+		return val
+	else if(mongodb.ObjectID.isValid(val))
+		return mongodb.ObjectID(val)
+	throw new CustomError({
+		message: 'Value ('+val+') can not be converted to Mongo ObjectID',
+		status: 500
+	})
+}
+exports.isValidArrayIDs = function(val, { allowNullable=false }={}) {
+	try {
+		exports.normalizeArrayIDs(val, { allowNullable: allowNullable })
+		return true
+	}
+	catch(err) {
+		return false
+	}
+}
+exports.normalizeArrayIDs = function(val, { allowNullable=false }={}) {
+	if(allowNullable && val === null)
+		return null
+	else if(val instanceof Array) {
+		return val.map((id) => {
+			return exports.normalizeID(id)
+		})
+	}
+	throw new CustomError({
+		message: 'Value ('+val+') can not be converted to Mongo ObjectID',
+		status: 500
+	})
+}

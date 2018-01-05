@@ -1,5 +1,5 @@
-var validatorUtil = require('../common/validatorUtil')
 var mongodb = require('mongodb')
+var mongoUtil = require('../common/mongoUtil')
 
 module.exports = class Document {
 	constructor(json) {
@@ -13,19 +13,19 @@ module.exports = class Document {
 		return this.__id
 	}
 	set _id(val) {
-		this.__id = validatorUtil.normalizeID(val)
+		this.__id = mongoUtil.normalizeID(val)
 	}
 	get dateUpdated() {
 		return this._dateUpdated
 	}
 	set dateUpdated(val) {
-		this._dateUpdated = validatorUtil.normalizeDate(val)
+		this._dateUpdated = new Date(val)
 	}
 	get dateCreated() {
 		return this._dateCreated
 	}
 	set dateCreated(val) {
-		this._dateCreated = validatorUtil.normalizeDate(val)
+		this._dateCreated = new Date(val)
 	}
 	/* This enforces use of get methods for creating Object.
 		Otherwise "_" instance variables would be used.

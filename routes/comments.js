@@ -6,9 +6,9 @@ var mongoUtil = require('../common/mongoUtil')
 var commonAuth = require('../common/authUtil')
 var emailUtil = require('../common/emailUtil')
 var configUtil = require('../common/configUtil')
-var validatorUtil = require('../common/validatorUtil')
 var CustomError = require('../common/errorUtil')
 var asyncWrap = require('../common/asyncUtil').asyncWrap
+const logger = require('../common/loggingUtil').appLogger
 var router = express.Router()
 
 router.post('/create', asyncWrap(async (req, res, next) => {
@@ -56,7 +56,7 @@ router.post('/create', asyncWrap(async (req, res, next) => {
 				},
 				{
 					$addToSet: {
-						children: validatorUtil.normalizeID(commentNew._id)
+						children: mongoUtil.normalizeID(commentNew._id)
 					}
 				}
 			)
@@ -83,7 +83,7 @@ router.post('/create', asyncWrap(async (req, res, next) => {
 				const email = new emailUtil.Email({
 					to: parentCommentEmail,
 					from: configUtil.adminEmail,
-					subject: 'Your Comment has a Reply',
+					subject: 'Your Comment Received a Reply',
 					text: undefined,
 					html: `
 					<html>
@@ -109,6 +109,7 @@ router.post('/create', asyncWrap(async (req, res, next) => {
 					</html>
 					`})
 				emailUtil.sendEmail(email)
+				.catch((error) => { logger.error('Failed to send email: '+error)})
 			}
 		}
 	}
@@ -150,13 +151,13 @@ router.post('/create', asyncWrap(async (req, res, next) => {
  */
 router.get('/read', asyncWrap(async (req, res, next) => {
 	const query = {
-		entity: 			validatorUtil.normalizeEntity(req.query.entity, { allowNullable: true }),
-		parent: 			validatorUtil.normalizeID(req.query.parent, { allowNullable: true }),
-		start: 				(req.query.start) 			? validatorUtil.normalizeID(req.query.start) 					: mongodb.ObjectID(),
-		pageSize: 		(req.query.pageSize) 		? parseInt(req.query.pageSize)												: 5,
-		sortOrder: 		(req.query.sortOrder) 	? parseInt(req.query.sortOrder.match(/^(1|-1)$/g)[0])	: -1,
-		pageNum: 			(req.query.pageNum) 		? parseInt(req.query.pageNum) 												: 1,
-		skipOnPage: 	(req.query.skipOnPage) 	? parseInt(req.query.skipOnPage) 											: 0
+		entity: 			(req.query.entity)			? Comment.entityNormalizer(req.query.entity)												: null,
+		parent: 			(req.query.parent)			? mongoUtil.normalizeID(req.query.parent, { allowNullable: true }) 	: null,
+		start: 				(req.query.start) 			? mongoUtil.normalizeID(req.query.start) 														: mongodb.ObjectID(),
+		pageSize: 		(req.query.pageSize) 		? parseInt(req.query.pageSize)																			: 5,
+		sortOrder: 		(req.query.sortOrder) 	? parseInt(req.query.sortOrder.match(/^(1|-1)$/g)[0])								: -1,
+		pageNum: 			(req.query.pageNum) 		? parseInt(req.query.pageNum) 																			: 1,
+		skipOnPage: 	(req.query.skipOnPage) 	? parseInt(req.query.skipOnPage) 																		: 0
 	}
 
 	const results = await mongoUtil.getDb()
@@ -199,12 +200,12 @@ router.post('/down-vote', commonAuth.ensureAuthenticated, asyncWrap(async (req, 
 		.collection(Comment.COLLECTION_NAME)
 		.updateOne(
 			{
-				_id: validatorUtil.normalizeID(req.body._id),
+				_id: mongoUtil.normalizeID(req.body._id),
 				removed: { $eq: null }
 			},
 			{
 				$addToSet: {
-					downVoteAccountIDs: validatorUtil.normalizeID(req.user._id)
+					downVoteAccountIDs: mongoUtil.normalizeID(req.user._id)
 				}
 			}
 		)
@@ -220,12 +221,12 @@ router.post('/up-vote', commonAuth.ensureAuthenticated, asyncWrap(async (req, re
 		.collection(Comment.COLLECTION_NAME)
 		.updateOne(
 			{
-				_id: validatorUtil.normalizeID(req.body._id),
+				_id: mongoUtil.normalizeID(req.body._id),
 				removed: { $eq: null }
 			},
 			{
 				$addToSet: {
-					upVoteAccountIDs: validatorUtil.normalizeID(req.user._id)
+					upVoteAccountIDs: mongoUtil.normalizeID(req.user._id)
 				}
 			}
 		)
@@ -241,12 +242,12 @@ router.post('/flag', commonAuth.ensureAuthenticated, asyncWrap(async (req, res, 
 		.collection(Comment.COLLECTION_NAME)
 		.updateOne(
 			{
-				_id: validatorUtil.normalizeID(req.body._id),
+				_id: mongoUtil.normalizeID(req.body._id),
 				removed: { $eq: null }
 			},
 			{
 				$addToSet: {
-					flags: validatorUtil.normalizeID(req.user._id)
+					flags: mongoUtil.normalizeID(req.user._id)
 				}
 			}
 		)
@@ -262,8 +263,8 @@ router.post('/edit', commonAuth.ensureAuthenticated, asyncWrap(async (req, res, 
 		.collection(Comment.COLLECTION_NAME)
 		.updateOne(
 			{
-				accountID: validatorUtil.normalizeID(req.user._id),
-				_id: validatorUtil.normalizeID(req.body._id),
+				accountID: mongoUtil.normalizeID(req.user._id),
+				_id: mongoUtil.normalizeID(req.body._id),
 				removed: { $eq: null },
 				children: { $eq: [] }
 			},
@@ -291,8 +292,8 @@ router.post('/notify-on-reply', commonAuth.ensureAuthenticated, asyncWrap(async 
 		.collection(Comment.COLLECTION_NAME)
 		.updateOne(
 			{
-				accountID: validatorUtil.normalizeID(req.user._id),
-				_id: validatorUtil.normalizeID(req.body._id),
+				accountID: mongoUtil.normalizeID(req.user._id),
+				_id: mongoUtil.normalizeID(req.body._id),
 			},
 			{
 				$set: {
@@ -306,13 +307,13 @@ router.post('/mark-removed', commonAuth.ensureAuthenticated, asyncWrap(async (re
 	const results = await mongoUtil.getDb()
 		.collection(Comment.COLLECTION_NAME)
 		.updateOne({
-			_id: validatorUtil.normalizeID(req.body._id),
-			accountID: validatorUtil.normalizeID(req.user._id),
+			_id: mongoUtil.normalizeID(req.body._id),
+			accountID: mongoUtil.normalizeID(req.user._id),
 			removed: { $eq: null }
 		},
 		{
 			$set: {
-				removed: validatorUtil.normalizeID(req.user._id),
+				removed: mongoUtil.normalizeID(req.user._id),
 				notifyOnReply: false
 			}
 		})

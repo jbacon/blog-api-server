@@ -8,13 +8,13 @@ var routesAuth = require('./routes/auth')
 var routesAccounts = require('./routes/accounts')
 var commonLogging = require('./common/loggingUtil')
 var CustomError = require('./common/errorUtil')
-var commonMongo = require('./common/mongoUtil')
+var mongoUtil = require('./common/mongoUtil')
 var commonAuth = require('./common/authUtil')
 var commonConfig = require('./common/configUtil')
 var asyncWrap = require('./common/asyncUtil.js').asyncWrap
 
-commonMongo.connect(commonConfig.mongoDbUrl)
-	.then(commonMongo.configureDB)
+mongoUtil.connect(commonConfig.mongoDbUrl)
+	.then(mongoUtil.configureDB)
 	.catch((error) => { throw error })
 
 var app = express()

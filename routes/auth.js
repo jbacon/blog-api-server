@@ -4,11 +4,11 @@ var bcrypt = require('bcryptjs')
 var authUtil = require('../common/authUtil')
 var mongoUtil = require('../common/mongoUtil')
 var validator = require('validator')
-var validatorUtil = require('../common/validatorUtil')
 var CustomError = require('../common/errorUtil')
 var emailUtil = require('../common/emailUtil')
 var configUtil = require('../common/configUtil')
 var asyncWrap = require('../common/asyncUtil').asyncWrap
+const logger = require('../common/loggingUtil').appLogger
 var router = express.Router()
 
 async function respondWithToken(req, res, next) {
@@ -100,7 +100,8 @@ router.post('/email/register/request', asyncWrap(async (req, res, next) => {
 		</html>
 		`
 	})
-	await emailUtil.sendEmail(email)
+	emailUtil.sendEmail(email)
+		.catch((error) => { logger.error('Failed to send email: '+error)})
 	res.json(`
 		Additional action required!
 		To activate your account you must verify your email via the automated confirmation email sent to your address.`)
@@ -139,7 +140,7 @@ router.post('/email/password-reset/request', asyncWrap(async (req, res, next) =>
 	var email = new emailUtil.Email({
 		to: account.email,
 		from: configUtil.adminEmail,
-		subject: 'Forgot Password? Please verify your request',
+		subject: 'Forgot Password',
 		text: undefined,
 		html: `
 		<html>
@@ -150,7 +151,7 @@ router.post('/email/password-reset/request', asyncWrap(async (req, res, next) =>
 					You have requested a password reset on my blog website <a href='${configUtil.websiteURL}'>${configUtil.websiteURL}</a>.
 					</br>
 					</br>
-					To be sent a new password (auto-generated), click the following temporary link:
+					To reset your password, click the following temporary link before it expires (20min):
 					</br>
 					<a href='${passwordResetUrl}'>${passwordResetUrl}</a>
 					</br>
@@ -166,8 +167,9 @@ router.post('/email/password-reset/request', asyncWrap(async (req, res, next) =>
 		</html>
 		`
 	})
-	await emailUtil.sendEmail(email)
-	res.json('A temporary password reset link has been sent to your email adress')
+	emailUtil.sendEmail(email)
+		.catch((error) => { logger.error('Failed to send email: '+error)})
+	res.json('A temporary password reset link has been sent to your email address')
 }))
 /* Password Reset Email Callback
 1. Verify Reset Token.
@@ -188,7 +190,7 @@ router.post('/email/password-reset/callback', asyncWrap(async (req, res, next) =
 		.collection(Account.COLLECTION_NAME)
 		.findOneAndUpdate(
 			{
-				_id: validatorUtil.normalizeID(account._id)
+				_id: mongoUtil.normalizeID(account._id)
 			},
 			{
 				$set: {
@@ -219,7 +221,7 @@ router.post('/email/silent-registration/request', asyncWrap(async (req, res, nex
 	const email = new emailUtil.Email({
 		to: newAccount.email,
 		from: configUtil.adminEmail,
-		subject: 'Hello',
+		subject: 'Tech Hub - Josh Bacon',
 		text: undefined,
 		html: `
 		<html>
@@ -244,7 +246,8 @@ router.post('/email/silent-registration/request', asyncWrap(async (req, res, nex
 		</html>
 		`
 	})
-	await emailUtil.sendEmail(email)
+	emailUtil.sendEmail(email)
+		.catch((error) => { logger.error('Failed to send email: '+error)})
 	res.json('A temporary registration link has been sent to your email')
 }))
 /* Callback for completing silent-registration by verifying special silent-registration auth token
