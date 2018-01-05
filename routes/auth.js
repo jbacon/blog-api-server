@@ -208,7 +208,7 @@ router.post('/email/password-reset/callback', asyncWrap(async (req, res, next) =
 	2. Generate JWT w/ "silent-registration"
 	3. Send Email w/ Link to Web App Browser
 	*/
-router.post('/email/silent-registration/request', authUtil.ensureAuthenticated, authUtil.ensureAdmin, syncWrap(async (req, res, next) => {
+router.post('/email/silent-registration/request', authUtil.ensureAuthenticated, authUtil.ensureAdmin, asyncWrap(async (req, res, next) => {
 	authUtil.emailSilentRegistration({
 		email: req.body.email,
 		nameFirst: req.body.nameFirst,
