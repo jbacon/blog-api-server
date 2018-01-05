@@ -51,7 +51,7 @@ var router = express.Router()
  *
  * @apiUse CreateUserError
  */
-router.get('/read', commonAuth.ensureAdmin, asyncWrap(async (req, res, next) => {
+router.get('/read', commonAuth.ensureAuthenticated, commonAuth.ensureAdmin, asyncWrap(async (req, res, next) => {
 	if(!validator.isInt(req.query.pageSize))
 		throw new CustomError({
 			message: 'Value '+req.query.pageSize+' for pageSize is invalid...',

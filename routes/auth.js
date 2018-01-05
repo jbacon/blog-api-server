@@ -208,47 +208,16 @@ router.post('/email/password-reset/callback', asyncWrap(async (req, res, next) =
 	2. Generate JWT w/ "silent-registration"
 	3. Send Email w/ Link to Web App Browser
 	*/
-router.post('/email/silent-registration/request', asyncWrap(async (req, res, next) => {
-	const newAccount = new Account({
+router.post('/email/silent-registration/request', authUtil.ensureAuthenticated, authUtil.ensureAdmin, syncWrap(async (req, res, next) => {
+	authUtil.emailSilentRegistration({
 		email: req.body.email,
 		nameFirst: req.body.nameFirst,
 		nameLast: req.body.nameLast
 	})
-	const user = newAccount.toJSON({ includeSensitiveFields: ['email'] })
-	const token = await authUtil.createJwt({ type: 'silent-registration', user: user })
-	const fragment = 'token='+encodeURIComponent(token)
-	const silentRegistrationLink = configUtil.websiteURL+'/auth/email/silent-registration/callback#'+fragment
-	const email = new emailUtil.Email({
-		to: newAccount.email,
-		from: configUtil.adminEmail,
-		subject: 'Tech Hub - Josh Bacon',
-		text: undefined,
-		html: `
-		<html>
-			<body>
-				<p>
-					Hello ${newAccount.nameFirst} ${newAccount.nameLast},</br>
-					Thanks for taking interest in my tech blog (<a href='${configUtil.websiteURL}'>${configUtil.websiteURL}</a>).
-					If you'd like to stay connected and up-to-date, fee free to register with my site by following the link below:
-					</br>
-					</br>
-					<a href='${silentRegistrationLink}'>${silentRegistrationLink}</a>
-					</br>
-					</br>
-					This is an automated email but feel free to respond with any questions and I will get back to you personally!
-					</br>
-					</br>
-					Cheers,
-					</br>
-					Josh Bacon
-				</p>
-			</body>
-		</html>
-		`
+	.catch((error) => {
+		logger.error('Failed to send silent registration email. '+error)
 	})
-	emailUtil.sendEmail(email)
-		.catch((error) => { logger.error('Failed to send email: '+error)})
-	res.json('A temporary registration link has been sent to your email')
+	res.json('A temporary registration link is being sent to your email. May take up to 5 minutes for email to be received.')
 }))
 /* Callback for completing silent-registration by verifying special silent-registration auth token
 	and the new user's password which allwos us to create a new account and send JWT back to user.

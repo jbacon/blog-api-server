@@ -43,6 +43,13 @@ router.post('/create', asyncWrap(async (req, res, next) => {
 					message: 'The email you\'ve provided belongs to a verified account holder already, you cannot use this email to comment anonymously! Try logging in.'
 				})
 			}
+			// Don't await, I don't want client to have to wait till the email has been sent
+			authUtil.emailSilentRegistration({
+				email: req.body.email,
+				nameFirst: req.body.nameFirst,
+				nameLast: req.body.nameLast
+			})
+				.catch((error) => { logger.error('Failed sending email for silent registration. '+error)})
 	}
 	// Update Parent Comment's Child List w/ New Comment
 	var parentComment = null

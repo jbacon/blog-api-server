@@ -270,3 +270,44 @@ async function socialAuthencationHandler(socialProfileType, profile) {
 	}
 	return account
 }
+async function emailSilentRegistration({ email, nameFirst, nameLast }) {
+		// Silently email a registration request
+	const newAccount = new Account({
+		email: email,
+		nameFirst: nameFirst,
+		nameLast: nameLast
+	})
+	const user = newAccount.toJSON({ includeSensitiveFields: ['email'] })
+	const token = await authUtil.createJwt({ type: 'silent-registration', user: user })
+	const fragment = 'token='+encodeURIComponent(token)
+	const silentRegistrationLink = configUtil.websiteURL+'/auth/email/silent-registration/callback#'+fragment
+	const email = new emailUtil.Email({
+		to: newAccount.email,
+		from: configUtil.adminEmail,
+		subject: 'Tech Hub - Josh Bacon',
+		text: undefined,
+		html: `
+		<html>
+			<body>
+				<p>
+					Hello ${newAccount.nameFirst} ${newAccount.nameLast},</br>
+					Thanks for taking interest in my tech blog (<a href='${configUtil.websiteURL}'>${configUtil.websiteURL}</a>).
+					If you'd like to stay connected and up-to-date, fee free to register with my site by following the link below:
+					</br>
+					</br>
+					<a href='${silentRegistrationLink}'>${silentRegistrationLink}</a>
+					</br>
+					</br>
+					This is an automated email but feel free to respond with any questions and I will get back to you personally!
+					</br>
+					</br>
+					Cheers,
+					</br>
+					Josh Bacon
+				</p>
+			</body>
+		</html>
+		`
+	})
+	await emailUtil.sendEmail(email)
+}
