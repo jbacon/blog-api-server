@@ -10,12 +10,12 @@ module.exports = class Account extends Document {
 	}
 	constructor(json) {
 		super(json)
-		this.email 											= (typeof json.email 										!== 'undefined') ? json.email 										: null
-		this.nameFirst 									= (typeof json.nameFirst 								!== 'undefined') ? json.nameFirst 								: null
-		this.nameLast 									= (typeof json.nameLast 								!== 'undefined') ? json.nameLast 									: null
-		this.passwordHashAndSalt 				= (typeof json.passwordHashAndSalt 			!== 'undefined') ? json.passwordHashAndSalt 			: null
-		this.facebookProfileID 					= (typeof json.facebookProfileID 				!== 'undefined') ? json.facebookProfileID 				: null
-		this.googleProfileID 						= (typeof json.googleProfileID 					!== 'undefined') ? json.googleProfileID 					: null
+		this.email 											= (typeof json.email 										!== 'undefined') ? json.email 										: undefined
+		this.nameFirst 									= (typeof json.nameFirst 								!== 'undefined') ? json.nameFirst 								: undefined
+		this.nameLast 									= (typeof json.nameLast 								!== 'undefined') ? json.nameLast 									: undefined
+		this.passwordHashAndSalt 				= (typeof json.passwordHashAndSalt 			!== 'undefined') ? json.passwordHashAndSalt 			: undefined
+		this.facebookProfileID 					= (typeof json.facebookProfileID 				!== 'undefined') ? json.facebookProfileID 				: undefined
+		this.googleProfileID 						= (typeof json.googleProfileID 					!== 'undefined') ? json.googleProfileID 					: undefined
 		this.dateLastAuthenticated 			= (typeof json.dateLastAuthenticated 		!== 'undefined') ? json.dateLastAuthenticated 		: new Date()
 		this.notifyOnMyCommentReplies 	= (typeof json.notifyOnMyCommentReplies !== 'undefined') ? json.notifyOnMyCommentReplies 	: true
 		this.notifyOnNewArticles 				= (typeof json.notifyOnNewArticles 			!== 'undefined') ? json.notifyOnNewArticles 			: false
@@ -25,30 +25,40 @@ module.exports = class Account extends Document {
 		return this._facebookProfileID
 	}
 	set facebookProfileID(val) {
+		if(typeof val !== 'string' && val !== undefined)
+			throw new CustomError({
+				message: 'Invalid entry for facebookProfileID, must be string not alphabetic',
+				status: 500
+			})
 		this._facebookProfileID = val
 	}
 	get googleProfileID() {
 		return this._googleProfileID
 	}
 	set googleProfileID(val) {
+		if(typeof val !== 'string' && val !== undefined)
+			throw new CustomError({
+				message: 'Invalid entry for googleProfileID, must be string not alphabetic',
+				status: 500
+			})
 		this._googleProfileID = val
 	}
 	get linkedInProfileID() {
 		return this._linkedInProfileID
 	}
 	set linkedInProfileID(val) {
+		if(typeof val !== 'string' && val !== undefined)
+			throw new CustomError({
+				message: 'Invalid entry for linkedInProfileID, must be string not alphabetic',
+				status: 500
+			})
 		this._linkedInProfileID = val
 	}
 	get email() {
 		return this._email
 	}
 	set email(val) {
-		if(val) {
-			this._email = validator.normalizeEmail(val)
-		}
-		else {
-			return null
-		}
+		this._email = validator.normalizeEmail(val)
 	}
 	get isAdmin() {
 		if(this._email === configUtil.adminEmail)
@@ -120,6 +130,11 @@ module.exports = class Account extends Document {
 		return this._passwordHashAndSalt
 	}
 	set passwordHashAndSalt(val) {
+		if(typeof val !== 'string' && val !== undefined)
+			throw new CustomError({
+				message: 'Invalid entry for passwordHashAndSalt, must be a string or undefined',
+				status: 500
+			})
 		this._passwordHashAndSalt = val
 	}
 	get dateLastAuthenticated() {

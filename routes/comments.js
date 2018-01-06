@@ -24,7 +24,7 @@ router.post('/create', asyncWrap(async (req, res, next) => {
 		entity: req.body.entity,
 		parent: req.body.parent,
 		text: req.body.text,
-		accountID: (isAuthenticated) ? req.user._id : null,
+		accountID: (isAuthenticated) ? req.user._id : undefined,
 		email: req.body.email,
 		nameFirst: req.body.nameFirst,
 		nameLast: req.body.nameLast,
@@ -44,7 +44,7 @@ router.post('/create', asyncWrap(async (req, res, next) => {
 				})
 			}
 			// Don't await, I don't want client to have to wait till the email has been sent
-			authUtil.emailSilentRegistration({
+			commonAuth.emailSilentRegistration({
 				email: req.body.email,
 				nameFirst: req.body.nameFirst,
 				nameLast: req.body.nameLast
@@ -52,7 +52,7 @@ router.post('/create', asyncWrap(async (req, res, next) => {
 				.catch((error) => { logger.error('Failed sending email for silent registration. '+error)})
 	}
 	// Update Parent Comment's Child List w/ New Comment
-	var parentComment = null
+	var parentComment = undefined
 	if(commentNew.parent) {
 		const results = await mongoUtil.getDb()
 			.collection(Comment.COLLECTION_NAME)
@@ -158,8 +158,8 @@ router.post('/create', asyncWrap(async (req, res, next) => {
  */
 router.get('/read', asyncWrap(async (req, res, next) => {
 	const query = {
-		entity: 			(req.query.entity)			? Comment.entityNormalizer(req.query.entity)												: null,
-		parent: 			(req.query.parent)			? mongoUtil.normalizeID(req.query.parent, { allowNullable: true }) 	: null,
+		entity: 			(req.query.entity)			? Comment.entityNormalizer(req.query.entity)												: undefined,
+		parent: 			(req.query.parent)			? mongoUtil.normalizeID(req.query.parent, { allowNullable: true }) 	: undefined,
 		start: 				(req.query.start) 			? mongoUtil.normalizeID(req.query.start) 														: mongodb.ObjectID(),
 		pageSize: 		(req.query.pageSize) 		? parseInt(req.query.pageSize)																			: 5,
 		sortOrder: 		(req.query.sortOrder) 	? parseInt(req.query.sortOrder.match(/^(1|-1)$/g)[0])								: -1,
@@ -208,7 +208,7 @@ router.post('/down-vote', commonAuth.ensureAuthenticated, asyncWrap(async (req, 
 		.updateOne(
 			{
 				_id: mongoUtil.normalizeID(req.body._id),
-				removed: { $eq: null }
+				removed: { $exists: false }
 			},
 			{
 				$addToSet: {
@@ -229,7 +229,7 @@ router.post('/up-vote', commonAuth.ensureAuthenticated, asyncWrap(async (req, re
 		.updateOne(
 			{
 				_id: mongoUtil.normalizeID(req.body._id),
-				removed: { $eq: null }
+				removed: { $exists: false }
 			},
 			{
 				$addToSet: {
@@ -250,7 +250,7 @@ router.post('/flag', commonAuth.ensureAuthenticated, asyncWrap(async (req, res, 
 		.updateOne(
 			{
 				_id: mongoUtil.normalizeID(req.body._id),
-				removed: { $eq: null }
+				removed: { $exists: true }
 			},
 			{
 				$addToSet: {
@@ -272,7 +272,7 @@ router.post('/edit', commonAuth.ensureAuthenticated, asyncWrap(async (req, res, 
 			{
 				accountID: mongoUtil.normalizeID(req.user._id),
 				_id: mongoUtil.normalizeID(req.body._id),
-				removed: { $eq: null },
+				removed: { $exists: false },
 				children: { $eq: [] }
 			},
 			{
@@ -316,7 +316,7 @@ router.post('/mark-removed', commonAuth.ensureAuthenticated, asyncWrap(async (re
 		.updateOne({
 			_id: mongoUtil.normalizeID(req.body._id),
 			accountID: mongoUtil.normalizeID(req.user._id),
-			removed: { $eq: null }
+			removed: { $exists: false }
 		},
 		{
 			$set: {

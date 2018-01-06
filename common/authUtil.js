@@ -1,6 +1,7 @@
 var bcrypt = require('bcryptjs')
 var jwt = require('jsonwebtoken')
-var commonConfig = require('../common/configUtil')
+var configUtil = require('../common/configUtil')
+var emailUtil = require('../common/emailUtil')
 var Account = require('../model/accounts')
 var passport = require('passport') // Authentication Framework
 var LocalStrategy = require('passport-local').Strategy // Authentication Strategy
@@ -34,7 +35,7 @@ exports.extractJwt = function(req) {
 	return token
 }
 exports.decodeToken = async function(token) {
-	var decoded = jwt.verify(token, commonConfig.jwtSecret)
+	var decoded = jwt.verify(token, configUtil.jwtSecret)
 	return decoded
 }
 exports.createJwt = async function(data) {
@@ -44,7 +45,7 @@ exports.createJwt = async function(data) {
 			exp: expiration,
 			data: data
 		},
-		commonConfig.jwtSecret)
+		configUtil.jwtSecret)
 	return token
 }
 exports.generatePassword = async function() {
@@ -57,7 +58,7 @@ exports.ensureAdmin = asyncWrap(async (req, res, next) => {
 			message: 'You are not logged in',
 			status: 401
 		})
-	if(req.user.email !== commonConfig.adminEmail)
+	if(req.user.email !== configUtil.adminEmail)
 		throw new CustomError({
 			message: 'Your account does not have administrative priviledges',
 			status: 403
@@ -121,7 +122,7 @@ passport.use('jwt', new JwtStrategy({
 	passReqToCallback: true,
 	session: false,
 	failWithError: true,
-	secretOrKey: commonConfig.jwtSecret,
+	secretOrKey: configUtil.jwtSecret,
 	jwtFromRequest: exports.extractJwt
 },
 (req, jwt_payload, next) => {
@@ -186,8 +187,8 @@ passport.use('local', new LocalStrategy(
 )
 
 passport.use('google', new GoogleTokenStrategy({
-	clientID: commonConfig.googleAppID,
-	clientSecret: commonConfig.googleAppSecret,
+	clientID: configUtil.googleAppID,
+	clientSecret: configUtil.googleAppSecret,
 	passReqToCallback: true,
 	failWithError: true,
 	session: false
@@ -200,8 +201,8 @@ passport.use('google', new GoogleTokenStrategy({
 // This middleware queries the facebook GraphAPI to return facebook account details,
 // therefore this is only called on initial login (not each request).
 passport.use('facebook', new FacebookTokenStrategy({
-	clientID: commonConfig.facebookAppID,
-	clientSecret: commonConfig.facebookAppSecret,
+	clientID: configUtil.facebookAppID,
+	clientSecret: configUtil.facebookAppSecret,
 	passReqToCallback: true,
 	session: false,
 	failWithError: true,
@@ -270,7 +271,8 @@ async function socialAuthencationHandler(socialProfileType, profile) {
 	}
 	return account
 }
-async function emailSilentRegistration({ email, nameFirst, nameLast }) {
+
+exports.emailSilentRegistration = async function({ email, nameFirst, nameLast }) {
 		// Silently email a registration request
 	const newAccount = new Account({
 		email: email,
@@ -278,10 +280,10 @@ async function emailSilentRegistration({ email, nameFirst, nameLast }) {
 		nameLast: nameLast
 	})
 	const user = newAccount.toJSON({ includeSensitiveFields: ['email'] })
-	const token = await authUtil.createJwt({ type: 'silent-registration', user: user })
+	const token = await exports.createJwt({ type: 'silent-registration', user: user })
 	const fragment = 'token='+encodeURIComponent(token)
 	const silentRegistrationLink = configUtil.websiteURL+'/auth/email/silent-registration/callback#'+fragment
-	const email = new emailUtil.Email({
+	const emailMessage = new emailUtil.Email({
 		to: newAccount.email,
 		from: configUtil.adminEmail,
 		subject: 'Tech Hub - Josh Bacon',
@@ -309,5 +311,5 @@ async function emailSilentRegistration({ email, nameFirst, nameLast }) {
 		</html>
 		`
 	})
-	await emailUtil.sendEmail(email)
+	await emailUtil.sendEmail(emailMessage)
 }

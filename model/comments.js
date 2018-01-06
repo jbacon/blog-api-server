@@ -14,20 +14,20 @@ module.exports = class Comment extends Document {
 		this.entity 						= json.entity
 		this.children 					= (typeof json.children 					!== 'undefined') ? json.children 												: []
 		this.ancestors 					= (typeof json.ancestors 					!== 'undefined') ? json.ancestors 											: []
-		this.parent 						= (typeof json.parent 						!== 'undefined') ? json.parent 													: null
-		this._parentComment 		= (typeof json.parentComment 			!== 'undefined') ? Comment.fromJSON(json.parentComment) : null
+		this.parent 						= (typeof json.parent 						!== 'undefined') ? json.parent 													: undefined
+		this._parentComment 		= (typeof json.parentComment 			!== 'undefined') ? Comment.fromJSON(json.parentComment) : undefined
 		this.text 							= json.text
-		this.textEditDate 			= (typeof json.textEditDate 			!== 'undefined') ? json.textEditDate 										: null
-		this.accountID 					= (typeof json.accountID 					!== 'undefined') ? json.accountID 											: null
-		this._account 					= (typeof json.account 						!== 'undefined') ? Account.fromJSON(json.account) 			: null
-		this.email 							= (typeof json.email 							!== 'undefined') ? json.email 													: null
-		this.nameFirst 					= (typeof json.nameFirst 					!== 'undefined') ? json.nameFirst 											: null
-		this.nameLast 					= (typeof json.nameLast 					!== 'undefined') ? json.nameLast 												: null
+		this.textEditDate 			= (typeof json.textEditDate 			!== 'undefined') ? json.textEditDate 										: undefined
+		this.accountID 					= (typeof json.accountID 					!== 'undefined') ? json.accountID 											: undefined
+		this._account 					= (typeof json.account 						!== 'undefined') ? Account.fromJSON(json.account) 			: undefined
+		this.email 							= (typeof json.email 							!== 'undefined') ? json.email 													: undefined
+		this.nameFirst 					= (typeof json.nameFirst 					!== 'undefined') ? json.nameFirst 											: undefined
+		this.nameLast 					= (typeof json.nameLast 					!== 'undefined') ? json.nameLast 												: undefined
 		this.notifyOnReply 			= (typeof json.notifyOnReply			!== 'undefined') ? json.notifyOnReply 									: true
 		this.upVoteAccountIDs 	= (typeof json.upVoteAccountIDs  	!== 'undefined') ? json.upVoteAccountIDs 								: []
 		this.downVoteAccountIDs = (typeof json.downVoteAccountIDs !== 'undefined') ? json.downVoteAccountIDs 							: []
 		this.flags 							= (typeof json.flags 							!== 'undefined') ? json.flags 													: []
-		this.removed 						= (typeof json.removed  					!== 'undefined') ? json.removed 												: null
+		this.removed 						= (typeof json.removed  					!== 'undefined') ? json.removed 												: undefined
 	}
 	get accountID() {
 		return this._accountID
@@ -58,7 +58,7 @@ module.exports = class Comment extends Document {
 				}
 			}
 			else {
-				return null
+				return undefined
 			}
 		})()
 	}
@@ -72,8 +72,8 @@ module.exports = class Comment extends Document {
 		return this._textEditDate
 	}
 	set textEditDate(val) {
-		var result = null
-		if(val !== null)
+		var result = undefined
+		if(val !== undefined)
 			result = new Date(val)
 		this._textEditDate = result
 	}
@@ -84,24 +84,24 @@ module.exports = class Comment extends Document {
 		const normalized = Comment.emailNormalizer(val)
 		if(this.accountID && normalized)
 			throw new CustomError({
-				message: 'Invalid email. Must be null because AccountID has already been set.',
+				message: 'Invalid email. Must be undefined because AccountID has already been set.',
 				status: 500
 			})
 		if(!this.accountID && !normalized)
 			throw new CustomError({
-				message: 'Invalid email. Cannot be null when AccountID is also null.',
+				message: 'Invalid email. Cannot be undefined when AccountID is also undefined.',
 				status: 500
 			})
 		this._email = normalized
 	}
 	static emailNormalizer(val) {
-		if(val !== null && !validator.isEmail(val))
+		if(val !== undefined && !validator.isEmail(val))
 			throw new CustomError({
-				message: 'Invalid email. Must be either null or valid email address.',
+				message: 'Invalid email. Must be either undefined or valid email address.',
 				status: 400
 			})
-		if(val === null)
-			return null
+		if(val === undefined)
+			return undefined
 		return validator.normalizeEmail(val)
 	}
 	get nameFirst() {
@@ -111,24 +111,24 @@ module.exports = class Comment extends Document {
 		const normalized = Comment.nameFirstNormalizer(val)
 		if(this.accountID && normalized)
 			throw new CustomError({
-				message: 'Invalid nameFirst. Must be null because AccountID has already been set.',
+				message: 'Invalid nameFirst. Must be undefined because AccountID has already been set.',
 				status: 500
 			})
 		if(!this.accountID && !normalized)
 			throw new CustomError({
-				message: 'Invalid nameFirst. Cannot be null when AccountID is also null.',
+				message: 'Invalid nameFirst. Cannot be undefined when AccountID is also undefined.',
 				status: 500
 			})
 		this._nameFirst = normalized
 	}
 	static nameFirstNormalizer(val) {
-		if(val !== null && typeof val !== 'string' && validator.isAlpha(val))
+		if(val !== undefined && typeof val !== 'string' && validator.isAlpha(val))
 			throw new CustomError({
-				message: 'Invalid nameFist. Must be either null or alphabetic string.',
+				message: 'Invalid nameFist. Must be either undefined or alphabetic string.',
 				status: 400
 			})
-		if(val === null)
-			return null
+		if(val === undefined)
+			return undefined
 		return val.toUpperCase()
 	}
 	get nameLast() {
@@ -138,24 +138,24 @@ module.exports = class Comment extends Document {
 		const normalized = Comment.nameLastNormalizer(val)
 		if(this.accountID && normalized)
 			throw new CustomError({
-				message: 'Invalid nameLast. Must be null because AccountID has already been set.',
+				message: 'Invalid nameLast. Must be undefined because AccountID has already been set.',
 				status: 500
 			})
 		if(!this.accountID && !normalized)
 			throw new CustomError({
-				message: 'Invalid nameLast. Cannot be null when AccountID is also null.',
+				message: 'Invalid nameLast. Cannot be undefined when AccountID is also undefined.',
 				status: 500
 			})
 		this._nameLast = normalized
 	}
 	static nameLastNormalizer(val) {
-		if(val !== null && typeof val !== 'string' && validator.isAlpha(val))
+		if(val !== undefined && typeof val !== 'string' && validator.isAlpha(val))
 			throw new CustomError({
-				message: 'Invalid nameLast. Must be either null or alphabetic string.',
+				message: 'Invalid nameLast. Must be either undefined or alphabetic string.',
 				status: 400
 			})
-		if(val === null)
-			return null
+		if(val === undefined)
+			return undefined
 		return val.toUpperCase()
 	}
 	get notifyOnReply() {
@@ -199,7 +199,7 @@ module.exports = class Comment extends Document {
 		return this._parent
 	}
 	set parent(val) {
-		const temp = (val === null) ? null : Comment.parentNormalizer(val)
+		const temp = (val === undefined) ? undefined : Comment.parentNormalizer(val)
 		if(temp && this.ancestors.length > 0 && !temp.equals(this.ancestors[this.ancestors.length -1 ]))
 			throw new CustomError({
 				message: 'Invalid parent value. Parent was not present on the end of the ancestor list.',
@@ -236,7 +236,7 @@ module.exports = class Comment extends Document {
 				}
 			}
 			else {
-				return null
+				return undefined
 			}
 		})()
 	}

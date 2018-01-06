@@ -8,7 +8,10 @@ var dbContext
 
 exports.connect = async (url) => {
 	if(mongoClient) throw new CustomError({ message: 'Already connected', status: 500 })
-	mongoClient = await mongodb.MongoClient.connect(url)
+	mongoClient = await mongodb.MongoClient.connect(url, {
+		ignoreUndefined: true,
+		serializeFunctions: true
+	})
 }
 exports.close = async () => {
 	if(!mongoClient) throw new CustomError({ message: 'Already disconnected', status: 500 })
@@ -49,8 +52,8 @@ exports.validateID = function(val, { allowNullable=false }={}) {
 }
 /* return value or throw error if no convertable */
 exports.normalizeID = function(val, { allowNullable=false }={}) {
-	if(allowNullable && val === null)
-		return null
+	if(allowNullable && val === undefined)
+		return undefined
 	else if(val instanceof mongodb.ObjectID)
 		return val
 	else if(mongodb.ObjectID.isValid(val))
@@ -70,8 +73,8 @@ exports.isValidArrayIDs = function(val, { allowNullable=false }={}) {
 	}
 }
 exports.normalizeArrayIDs = function(val, { allowNullable=false }={}) {
-	if(allowNullable && val === null)
-		return null
+	if(allowNullable && val === undefined)
+		return undefined
 	else if(val instanceof Array) {
 		return val.map((id) => {
 			return exports.normalizeID(id)
