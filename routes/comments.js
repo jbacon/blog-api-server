@@ -96,20 +96,20 @@ router.post('/create', asyncWrap(async (req, res, next) => {
 					<html>
 						<body>
 							<p>
-								Hello ${nameFirst} ${nameLast},</br>
+								Hello ${nameFirst} ${nameLast},<br>
 								You've received a reply on your comment left on my tech blog (<a href='${configUtil.websiteURL}'>${configUtil.websiteURL}</a>).
-								</br>
-								</br>
+								<br>
+								<br>
 								View the conversation here:
-								</br>
+								<br>
 								<a href='${conversationLink}'>${conversationLink}</a>
-								</br>
-								</br>
+								<br>
+								<br>
 								This is an automated email but feel free to respond with any questions and I will get back to you personally!
-								</br>
-								</br>
+								<br>
+								<br>
 								Cheers,
-								</br>
+								<br>
 								Josh Bacon
 							</p>
 						</body>

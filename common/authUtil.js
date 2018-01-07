@@ -290,21 +290,25 @@ exports.emailSilentRegistration = async function({ email, nameFirst, nameLast })
 		text: undefined,
 		html: `
 		<html>
+			<head>
+				<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+			</head>
 			<body>
 				<p>
-					Hello ${newAccount.nameFirst} ${newAccount.nameLast},</br>
+					Hello ${newAccount.nameFirst} ${newAccount.nameLast},
+					<br>
 					Thanks for taking interest in my tech blog (<a href='${configUtil.websiteURL}'>${configUtil.websiteURL}</a>).
 					If you'd like to stay connected and up-to-date, fee free to register with my site by following the link below:
-					</br>
-					</br>
+					<br>
+					<br>
 					<a href='${silentRegistrationLink}'>${silentRegistrationLink}</a>
-					</br>
-					</br>
+					<br>
+					<br>
 					This is an automated email but feel free to respond with any questions and I will get back to you personally!
-					</br>
-					</br>
+					<br>
+					<br>
 					Cheers,
-					</br>
+					<br>
 					Josh Bacon
 				</p>
 			</body>

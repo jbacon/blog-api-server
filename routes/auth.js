@@ -80,20 +80,20 @@ router.post('/email/register/request', asyncWrap(async (req, res, next) => {
 			<body>
 				<p>
 					Hello,
-					</br>
+					<br>
 					Thanks for registering an account with my Portfolio web app! (<a href='${configUtil.websiteURL}'>${configUtil.websiteURL}</a>).
-					</br>
-					</br>
+					<br>
+					<br>
 					To complete registration please visit the link below:
-					</br>
+					<br>
 					<a href='${registrationUrl}'>${registrationUrl}</a>
-					</br>
-					</br>
+					<br>
+					<br>
 					This is an automated email, but feel free to respond with any questions and I will get back to you personally!
-					</br>
-					</br>
+					<br>
+					<br>
 					Cheers,
-					</br>
+					<br>
 					Josh Bacon
 				</p>
 			</body>
@@ -147,20 +147,20 @@ router.post('/email/password-reset/request', asyncWrap(async (req, res, next) =>
 			<body>
 				<p>
 					Hello,
-					</br>
+					<br>
 					You have requested a password reset on my blog website <a href='${configUtil.websiteURL}'>${configUtil.websiteURL}</a>.
-					</br>
-					</br>
+					<br>
+					<br>
 					To reset your password, click the following temporary link before it expires (20min):
-					</br>
+					<br>
 					<a href='${passwordResetUrl}'>${passwordResetUrl}</a>
-					</br>
-					</br>
+					<br>
+					<br>
 					This is an automated email, but feel free to respond with any questions and I will get back to you personally!
-					</br>
-					</br>
+					<br>
+					<br>
 					Cheers,
-					</br>
+					<br>
 					Josh Bacon
 				</p>
 			</body>
