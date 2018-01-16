@@ -51,7 +51,7 @@ after_failure:
 before_deploy:
 deploy:
   provider: script
-  script: deploy.sh
+  script: sh deploy.sh
   on:
     branch: master
   skip_cleanup: true
