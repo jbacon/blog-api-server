@@ -49,17 +49,12 @@ after_success:
 after_failure:
   - echo "After Failure..."
 before_deploy:
-  - provider: script
-    script: before_deploy.sh
-    on:
-      branch: master
-    skip_cleanup: true
 deploy:
-  - provider: script
-    script: deploy.sh
-    on:
-      branch: master
-    skip_cleanup: true
+  provider: script
+  script: deploy.sh
+  on:
+    branch: master
+  skip_cleanup: true
 after_deploy:
   - echo "After Deploy..."
 after_script:
