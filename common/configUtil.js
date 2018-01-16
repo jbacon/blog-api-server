@@ -1,4 +1,6 @@
-const DEFAULT_CONFIG_FILE='./configs.json.template'
+//var bcrypt = require('bcryptjs')
+
+const DEFAULT_CONFIG_FILE='./configs.json'
 
 const CONFIG_FILE = process.env.PORTFOLIO_CONFIG_FILE || DEFAULT_CONFIG_FILE
 
@@ -9,7 +11,7 @@ exports.ENVIRONMENTS = {
 	PROD: 'production'
 }
 
-exports.environment 							= process.env.PORTFOLIO_NODE_ENV 										|| configs.environment
+exports.environment 							= process.env.PORTFOLIO_ENVIRONMENT 								|| configs.environment
 exports.jwtSecret 								= process.env.PORTFOLIO_JWT_SECRET 									|| configs.jwtSecret
 exports.adminEmail 								= process.env.PORTFOLIO_ADMIN_EMAIL 								|| configs.adminEmail
 exports.adminNameFirst 						= process.env.PORTFOLIO_ADMIN_NAME_FIRST 						|| configs.adminNameFirst
@@ -24,7 +26,7 @@ exports.facebookAppID 						= process.env.PORTFOLIO_FACEBOOOK_APP_ID 						|| co
 exports.facebookAppSecret 				= process.env.PORTFOLIO_FACEBOOK_APP_SECRET 				|| configs.facebookAppSecret
 exports.linkedInAppID 						= process.env.PORTFOLIO_LINKEDIN_APP_SECRET 				|| configs.linkedInAppID
 exports.linkedInAppSecret 				= process.env.PORTFOLIO_LINKEDIN_APP_SECRET 				|| configs.linkedInAppSecret
-exports.googleAppID 							= process.env.PORTFOLIO_GOOGLE_APP_SECRET 					|| configs.googleAppID
+exports.googleAppID 							= process.env.PORTFOLIO_GOOGLE_APP_ID								|| configs.googleAppID
 exports.googleAppSecret 					= process.env.PORTFOLIO_GOOGLE_APP_SECRET 					|| configs.googleAppSecret
 exports.googleGmailAccessToken 		= process.env.PORTFOLIO_GOOGLE_GMAIL_ACCESS_TOKEN 	|| configs.googleGmailAccessToken
 exports.googleGmailRefreshToken 	= process.env.PORTFOLIO_GOOGLE_GMAIL_REFRESH_TOKEN 	|| configs.googleGmailRefreshToken

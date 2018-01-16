@@ -6,7 +6,6 @@ var CustomError = require('../common/errorUtil')
 var bcrypt = require('bcryptjs')
 var validator = require('validator')
 var asyncWrap = require('../common/asyncUtil').asyncWrap
-const logger = require('../common/loggingUtil').appLogger
 var router = express.Router()
 
 /**
@@ -34,7 +33,7 @@ var router = express.Router()
  *	curl --include --request GET \
  *	--header "Accept: application/json" \
  *	--header "Content-Type: application/json" \
- *	http://localhost:8080/comments/read? \
+ *	http://localhost:3000/comments/read? \
  *	entity=/2017/november/19/building-a-tech-hub.html \
  *	&parent=null \
  *	&start=newest \
@@ -51,7 +50,7 @@ var router = express.Router()
  *
  * @apiUse CreateUserError
  */
-router.get('/read', commonAuth.ensureAuthenticated, commonAuth.ensureAdmin, asyncWrap(async (req, res, next) => {
+router.get('/read', commonAuth.ensureAuthenticated, commonAuth.ensureAdmin, asyncWrap(async (req, res/*, next*/) => {
 	if(!validator.isInt(req.query.pageSize))
 		throw new CustomError({
 			message: 'Value '+req.query.pageSize+' for pageSize is invalid...',
@@ -77,7 +76,7 @@ router.get('/read', commonAuth.ensureAuthenticated, commonAuth.ensureAdmin, asyn
 	res.json({ data: comments })
 }))
 
-router.post('/edit-details', commonAuth.ensureAuthenticated, asyncWrap(async (req, res, next) => {
+router.post('/edit-details', commonAuth.ensureAuthenticated, asyncWrap(async (req, res/*, next*/) => {
 	if(!validator.isEmail(req.body.email))
 		throw new CustomError({
 			message: 'Value '+req.body.email+' for email is invalid...',
@@ -98,7 +97,7 @@ router.post('/edit-details', commonAuth.ensureAuthenticated, asyncWrap(async (re
 			message: 'Value '+req.body.notifyOnMyCommentReplies+' for notifyOnMyCommentReplies is invalid...',
 			status: 400
 		})
-	var results = await mongoUtil.getDb()
+	/*var results = */await mongoUtil.getDb()
 		.collection(Account.COLLECTION_NAME)
 		.updateOne(
 			{
@@ -116,7 +115,7 @@ router.post('/edit-details', commonAuth.ensureAuthenticated, asyncWrap(async (re
 	res.json('Account edited')
 }))
 
-router.post('/reset-password', commonAuth.ensureAuthenticated, asyncWrap(async (req, res, next) => {
+router.post('/reset-password', commonAuth.ensureAuthenticated, asyncWrap(async (req, res/*, next*/) => {
 	if(!validator.isAlphanumeric(req.body.oldPassword))
 		throw new CustomError({
 			message: 'Old password should be alphanumeric...',
@@ -142,7 +141,7 @@ router.post('/reset-password', commonAuth.ensureAuthenticated, asyncWrap(async (
 			status: 409
 		})
 	var newPasswordHashAndSalt = bcrypt.hashSync(req.body.newPassword, 10)
-	var resultsUpdateOne = await mongoUtil.getDb()
+	/*var resultsUpdateOne = */await mongoUtil.getDb()
 		.collection(Account.COLLECTION_NAME)
 		.updateOne(
 			{ _id: mongoUtil.normalizeID(req.user._id) },

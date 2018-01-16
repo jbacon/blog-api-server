@@ -11,7 +11,7 @@ var asyncWrap = require('../common/asyncUtil').asyncWrap
 const logger = require('../common/loggingUtil').appLogger
 var router = express.Router()
 
-async function respondWithToken(req, res, next) {
+async function respondWithToken(req, res/*, next*/) {
 	const user = req.user.toJSON({ includeSensitiveFields: ['email'] })
 	const token = await authUtil.createJwt(user)
 	res.json({ token: token })
@@ -48,7 +48,7 @@ router.post('/email/login',
 	2. Create New Account JSON object
 	3. Create Registration Token w/ Account Payload
 	4. Send Email w/ Token embedded in link. */
-router.post('/email/register/request', asyncWrap(async (req, res, next) => {
+router.post('/email/register/request', asyncWrap(async (req, res/*, next*/) => {
 	var results = await mongoUtil.getDb()
 		.collection(Account.COLLECTION_NAME)
 		.findOne({
@@ -121,7 +121,7 @@ router.post('/email/register/callback', asyncWrap(async (req, res, next) => {
 	await respondWithToken(req, res, next)
 }))
 /* Request PasswordReset Email - Send email to specified address including a link w/ a temporary passwordreset token.*/
-router.post('/email/password-reset/request', asyncWrap(async (req, res, next) => {
+router.post('/email/password-reset/request', asyncWrap(async (req, res/*, next*/) => {
 	const results = await mongoUtil.getDb()
 		.collection(Account.COLLECTION_NAME)
 		.findOne({
@@ -201,22 +201,22 @@ router.post('/email/password-reset/callback', asyncWrap(async (req, res, next) =
 	req.user = Account.fromJSON(result.value)
 	await respondWithToken(req, res, next)
 }))
-	/* Silently send a registration request Email to the specified Anonymous User
+/* Silently send a registration request Email to the specified Anonymous User
 	containing a  callback link with a special JWT to the browser which will let the new User
 	enter a password can complete registration.
 	1. Create new Account Object
 	2. Generate JWT w/ "silent-registration"
 	3. Send Email w/ Link to Web App Browser
 	*/
-router.post('/email/silent-registration/request', authUtil.ensureAuthenticated, authUtil.ensureAdmin, asyncWrap(async (req, res, next) => {
+router.post('/email/silent-registration/request', authUtil.ensureAuthenticated, authUtil.ensureAdmin, asyncWrap(async (req, res/*, next*/) => {
 	authUtil.emailSilentRegistration({
 		email: req.body.email,
 		nameFirst: req.body.nameFirst,
 		nameLast: req.body.nameLast
 	})
-	.catch((error) => {
-		logger.error('Failed to send silent registration email. '+error)
-	})
+		.catch((error) => {
+			logger.error('Failed to send silent registration email. '+error)
+		})
 	res.json('A temporary registration link is being sent to your email. May take up to 5 minutes for email to be received.')
 }))
 /* Callback for completing silent-registration by verifying special silent-registration auth token

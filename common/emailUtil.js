@@ -19,7 +19,7 @@ exports.transporter = nodemailer.createTransport({
 		expires: Date.now() + (5 * 60 * 1000)
 	}
 })
-exports.transporter.on('token', token => {
+exports.transporter.on('token', (/*token*/) => {
 	logger.info('A new access token was generated for nodemailer transporter using the refresh token.')
 })
 exports.sendEmail = async function(email) {

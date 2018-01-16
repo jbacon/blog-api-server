@@ -11,7 +11,7 @@ var asyncWrap = require('../common/asyncUtil').asyncWrap
 const logger = require('../common/loggingUtil').appLogger
 var router = express.Router()
 
-router.post('/create', asyncWrap(async (req, res, next) => {
+router.post('/create', asyncWrap(async (req, res/*, next*/) => {
 	var isAuthenticated = false
 	try {
 		await commonAuth.ensureAuthenticated(req, res)
@@ -37,19 +37,19 @@ router.post('/create', asyncWrap(async (req, res, next) => {
 			.findOne({
 				email: req.body.email
 			})
-			if(results) {
-				throw new CustomError({
-					status: 400,
-					message: 'The email you\'ve provided belongs to a verified account holder already, you cannot use this email to comment anonymously! Try logging in.'
-				})
-			}
-			// Don't await, I don't want client to have to wait till the email has been sent
-			commonAuth.emailSilentRegistration({
-				email: req.body.email,
-				nameFirst: req.body.nameFirst,
-				nameLast: req.body.nameLast
+		if(results) {
+			throw new CustomError({
+				status: 400,
+				message: 'The email you\'ve provided belongs to a verified account holder already, you cannot use this email to comment anonymously! Try logging in.'
 			})
-				.catch((error) => { logger.error('Failed sending email for silent registration. '+error)})
+		}
+		// Don't await, I don't want client to have to wait till the email has been sent
+		commonAuth.emailSilentRegistration({
+			email: req.body.email,
+			nameFirst: req.body.nameFirst,
+			nameLast: req.body.nameLast
+		})
+			.catch((error) => { logger.error('Failed sending email for silent registration. '+error)})
 	}
 	// Update Parent Comment's Child List w/ New Comment
 	var parentComment = undefined
@@ -116,7 +116,7 @@ router.post('/create', asyncWrap(async (req, res, next) => {
 					</html>
 					`})
 				emailUtil.sendEmail(email)
-				.catch((error) => { logger.error('Failed to send email: '+error)})
+					.catch((error) => { logger.error('Failed to send email: '+error)})
 			}
 		}
 	}
@@ -133,7 +133,7 @@ router.post('/create', asyncWrap(async (req, res, next) => {
  *	curl --include --request GET \
  *	--header "Accept: application/json" \
  *	--header "Content-Type: application/json" \
- *	http://localhost:8080/comments/read? \
+ *	http://localhost:3000/comments/read? \
  *	entity=/2017/november/19/building-a-tech-hub.html \
  *	&parent=null \
  *	&start=newest \
@@ -156,7 +156,7 @@ router.post('/create', asyncWrap(async (req, res, next) => {
  *
  * @apiUse CreateUserError
  */
-router.get('/read', asyncWrap(async (req, res, next) => {
+router.get('/read', asyncWrap(async (req, res/*, next*/) => {
 	const query = {
 		entity: 			(req.query.entity)			? Comment.entityNormalizer(req.query.entity)												: undefined,
 		parent: 			(req.query.parent)			? mongoUtil.normalizeID(req.query.parent, { allowNullable: true }) 	: undefined,
@@ -202,7 +202,7 @@ router.get('/read', asyncWrap(async (req, res, next) => {
 	const commentsJson = await Promise.all(commentsJsonPromises)
 	res.json({ data: commentsJson })
 }))
-router.post('/down-vote', commonAuth.ensureAuthenticated, asyncWrap(async (req, res, next) => {
+router.post('/down-vote', commonAuth.ensureAuthenticated, asyncWrap(async (req, res/*, next*/) => {
 	const results = await mongoUtil.getDb()
 		.collection(Comment.COLLECTION_NAME)
 		.updateOne(
@@ -223,7 +223,7 @@ router.post('/down-vote', commonAuth.ensureAuthenticated, asyncWrap(async (req, 
 		})
 	res.json('Comment down voted.')
 }))
-router.post('/up-vote', commonAuth.ensureAuthenticated, asyncWrap(async (req, res, next) => {
+router.post('/up-vote', commonAuth.ensureAuthenticated, asyncWrap(async (req, res/*, next*/) => {
 	const results = await mongoUtil.getDb()
 		.collection(Comment.COLLECTION_NAME)
 		.updateOne(
@@ -244,7 +244,7 @@ router.post('/up-vote', commonAuth.ensureAuthenticated, asyncWrap(async (req, re
 		})
 	res.json('Comment up voted')
 }))
-router.post('/flag', commonAuth.ensureAuthenticated, asyncWrap(async (req, res, next) => {
+router.post('/flag', commonAuth.ensureAuthenticated, asyncWrap(async (req, res/*, next*/) => {
 	const results = await mongoUtil.getDb()
 		.collection(Comment.COLLECTION_NAME)
 		.updateOne(
@@ -265,7 +265,7 @@ router.post('/flag', commonAuth.ensureAuthenticated, asyncWrap(async (req, res, 
 		})
 	res.json('Comment flagged')
 }))
-router.post('/edit', commonAuth.ensureAuthenticated, asyncWrap(async (req, res, next) => {
+router.post('/edit', commonAuth.ensureAuthenticated, asyncWrap(async (req, res/*, next*/) => {
 	const results = await mongoUtil.getDb()
 		.collection(Comment.COLLECTION_NAME)
 		.updateOne(
@@ -289,13 +289,13 @@ router.post('/edit', commonAuth.ensureAuthenticated, asyncWrap(async (req, res, 
 		})
 	res.json('Comment text updated')
 }))
-router.post('/notify-on-reply', commonAuth.ensureAuthenticated, asyncWrap(async (req, res, next) => {
+router.post('/notify-on-reply', commonAuth.ensureAuthenticated, asyncWrap(async (req, res/*, next*/) => {
 	if(typeof req.body.notifyOnReply !== 'boolean')
 		throw new CustomError({
 			message: '"notifyOnReply" must be a boolean',
 			status: 400
 		})
-	const results = await mongoUtil.getDb()
+	/*const results = */await mongoUtil.getDb()
 		.collection(Comment.COLLECTION_NAME)
 		.updateOne(
 			{
@@ -310,7 +310,7 @@ router.post('/notify-on-reply', commonAuth.ensureAuthenticated, asyncWrap(async 
 		)
 	res.json('Comment notifications turned '+(req.body.notifyOnReply) ? 'on' : 'off')
 }))
-router.post('/mark-removed', commonAuth.ensureAuthenticated, asyncWrap(async (req, res, next) => {
+router.post('/mark-removed', commonAuth.ensureAuthenticated, asyncWrap(async (req, res/*, next*/) => {
 	const results = await mongoUtil.getDb()
 		.collection(Comment.COLLECTION_NAME)
 		.updateOne({

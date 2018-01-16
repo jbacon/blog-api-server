@@ -273,7 +273,7 @@ async function socialAuthencationHandler(socialProfileType, profile) {
 }
 
 exports.emailSilentRegistration = async function({ email, nameFirst, nameLast }) {
-		// Silently email a registration request
+	// Silently email a registration request
 	const newAccount = new Account({
 		email: email,
 		nameFirst: nameFirst,

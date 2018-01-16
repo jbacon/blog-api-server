@@ -1,10 +1,6 @@
 var mongodb = require('mongodb')
 var CustomError = require('../common/errorUtil')
-var configUtil = require('../common/configUtil')
-var Account = require('../model/accounts')
-var bcrypt = require('bcryptjs')
 var mongoClient
-var dbContext
 
 exports.connect = async (url) => {
 	if(mongoClient) throw new CustomError({ message: 'Already connected', status: 500 })
