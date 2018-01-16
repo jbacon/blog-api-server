@@ -7,8 +7,8 @@ services:
       - portfolio-api
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
-      - /etc/letsencrypt/archive/portfolioapi.joshbacon.name/fullchain1.pem:/fullchain.1pem
-      - /etc/letsencrypt/archive/portfolioapi.joshbacon.name/privkey1.pem:/privkey1.pem
+      - /etc/letsencrypt/live/portfolioapi.joshbacon.name/fullchain.pem:/fullchain.1pem
+      - /etc/letsencrypt/live/portfolioapi.joshbacon.name/privkey.pem:/privkey1.pem
     ports:
       - 443:443
       - 80:80

@@ -4,7 +4,7 @@ chmod 600 id_rsa
 eval "$(ssh-agent -s)"
 ssh-add id_rsa
 rm -f id_rsa
-openssl aes-256-cbc -K $encrypted_82bd95a7f607_key -iv $encrypted_82bd95a7f607_iv -in configs-prod.json.enc -out configs-prod.json -d
+openssl aes-256-cbc -K $encrypted_82bd95a7f607_key -iv $encrypted_82bd95a7f607_iv -in configs.json.enc -out configs.json -d
 ssh portfolio@portfolioapi.joshbacon.name docker-compose -f /home/portfolio/api-server/docker-compose-prod.yaml down --remove-orphans
 rsync -r --delete-after --quiet --exclude .git/ ${TRAVIS_BUILD_DIR}/ portfolio@portfolioapi.joshbacon.name:/home/portfolio/api-server/
 ssh portfolio@portfolioapi.joshbacon.name docker-compose -f /home/portfolio/api-server/docker-compose-prod.yaml up -d --remove-orphans --force-recreate
