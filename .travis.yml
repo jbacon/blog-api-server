@@ -35,67 +35,41 @@ env:
 addons:
   ssh_known_hosts: portfolioapi.joshbacon.name
 before_install:
-  - |
-    docker pull node:9.3.0-alpine
+  - docker pull node:9.3.0-alpine
 install:
-  - |
-    docker run --rm --volume ${TRAVIS_BUILD_DIR}/:/app/ node:9.3.0-alpine /bin/sh -c 'cd /app/; npm run build'
+  - docker run --rm --volume ${TRAVIS_BUILD_DIR}/:/app/ node:9.3.0-alpine /bin/sh -c 'cd /app/; npm run build'
 before_script:
-  - |
-    docker run --rm --volume ${TRAVIS_BUILD_DIR}/:/app/ node:9.3.0-alpine /bin/sh -c 'cd /app/; npm run lint'
+  - docker run --rm --volume ${TRAVIS_BUILD_DIR}/:/app/ node:9.3.0-alpine /bin/sh -c 'cd /app/; npm run lint'
 script:
-  - |
-    docker run --rm --volume ${TRAVIS_BUILD_DIR}/:/app/ node:9.3.0-alpine /bin/sh -c 'cd /app/; npm run test'
+  - docker run --rm --volume ${TRAVIS_BUILD_DIR}/:/app/ node:9.3.0-alpine /bin/sh -c 'cd /app/; npm run test'
 before_cache:
-  - |
-    echo "Before Cache..."
+  - echo "Before Cache..."
 after_success:
-  - |
-    echo "After Success..."
+  - echo "After Success..."
 after_failure:
-  - |
-    echo "After Failure..."
+  - echo "After Failure..."
 before_deploy:
   - on:
       branch: master
     provider: script
     skip_cleanup: true
     script:
-      - |
-        openssl aes-256-cbc \
-            -K $encrypted_82bd95a7f607_key \
-            -iv $encrypted_82bd95a7f607_iv \
-            -in id_rsa.enc \
-            -out id_rsa -d \
-        && chmod 600 id_rsa \
-        && eval "$(ssh-agent -s)" \
-        && ssh-add id_rsa \
-        && rm -f id_rsa \
-        && openssl aes-256-cbc \
-            -K $encrypted_82bd95a7f607_key \
-            -iv $encrypted_82bd95a7f607_iv \
-            -in configs-prod.json.enc \
-            -out configs-prod.json \
-            -d
+      - openssl aes-256-cbc -K $encrypted_82bd95a7f607_key -iv $encrypted_82bd95a7f607_iv -in id_rsa.enc -out id_rsa -d
+      - chmod 600 id_rsa
+      - eval "$(ssh-agent -s)"
+      - ssh-add id_rsa
+      - rm -f id_rsa
+      - openssl aes-256-cbc -K $encrypted_82bd95a7f607_key -iv $encrypted_82bd95a7f607_iv -in configs-prod.json.enc -out configs-prod.json -d
 deploy:
   - on:
       branch: master
     provider: script
     skip_cleanup: true
     script:
-      - |
-        ssh portfolio@portfolioapi.joshbacon.name docker-compose -f /home/portfolio/api-server/docker-compose-prod.yaml down --remove-orphans  \
-        && rsync \
-            -r \
-            --delete-after \
-            --quiet \
-            --exclude .git/ \
-            ${TRAVIS_BUILD_DIR}/ \
-            portfolio@portfolioapi.joshbacon.name:/home/portfolio/api-server/ \
-        && ssh portfolio@portfolioapi.joshbacon.name docker-compose -f /home/portfolio/api-server/docker-compose-prod.yaml up -d --remove-orphans --force-recreate
+      - ssh portfolio@portfolioapi.joshbacon.name docker-compose -f /home/portfolio/api-server/docker-compose-prod.yaml down --remove-orphans
+      - rsync -r --delete-after --quiet --exclude .git/ ${TRAVIS_BUILD_DIR}/ portfolio@portfolioapi.joshbacon.name:/home/portfolio/api-server/
+      - ssh portfolio@portfolioapi.joshbacon.name docker-compose -f /home/portfolio/api-server/docker-compose-prod.yaml up -d --remove-orphans --force-recreate
 after_deploy:
-  - |
-    echo "After Deploy..."
+  - echo "After Deploy..."
 after_script:
-  - |
-    echo "After Script..."
+  - echo "After Script..."
