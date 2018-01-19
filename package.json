@@ -5,9 +5,6 @@
   "description": "Node Express API Server for Josh Bacon's Public Portfolio Web App.",
   "main": "./bin/www",
   "scripts": {
-    "build": "npm install",
-    "lint": "eslint ./",
-    "test": "echo 'Build not implemented. Pass'",
     "start": "node --inspect=0.0.0.0:9229 ./bin/www"
   },
   "license": "ISC",
@@ -26,7 +23,8 @@
     "passport-google-token": "latest",
     "validator": "latest",
     "bcryptjs": "latest",
-    "nodemailer": "latest"
+    "nodemailer": "latest",
+    "jsonwebtoken": "latest"
   },
   "devDependencies": {
     "eslint": "latest",

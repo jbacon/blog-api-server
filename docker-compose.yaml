@@ -3,24 +3,29 @@ services:
   portfolio-api:
     image: node:9.3.0-alpine
     container_name: portfolio-api
-    command: /bin/sh -c 'cd /app/; npm install; npm run start;'
+    user: node
+    working_dir: /home/node/
+    command: /bin/sh -c 'npm install; npm start;'
     environment:
-      - PORTFOLIO_CONFIG_FILE=configs-dev.json
+      - PORTFOLIO_CONFIG_PASSWORD=${PORTFOLIO_CONFIG_PASSWORD}
+      - PORTFOLIO_CONFIG_FILE_PATH=/home/node/configs-local.json
     ports:
       - "9229:9229"
       - "3000:3000"
     volumes:
-      - ./:/app/
+      - ./:/home/node/
     depends_on:
       - portfolio-db-init
     links:
       - portfolio-db
   portfolio-db-init:
     image: mongo:3.6.1
-    command: mongo --nodb /mongo-setup.js
+    command: mongo --nodb /home/mongodb/mongo-setup.js
     container_name: portfolio-db-init
+    user: mongodb
+    working_dir: /home/mongodb/
     volumes:
-      - ./mongo-setup.js:/mongo-setup.js
+      - ./mongo-setup.js:/home/mongodb/mongo-setup.js
     depends_on:
       - portfolio-db
     links:
@@ -28,6 +33,8 @@ services:
   portfolio-db:
     image: mongo:3.6.1
     command: mongod
+    user: mongodb
+    working_dir: /home/mongodb/
     container_name: portfolio-db
     volumes:
       - ./data/db:/data/db

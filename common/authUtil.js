@@ -48,9 +48,6 @@ exports.createJwt = async function(data) {
 		configUtil.jwtSecret)
 	return token
 }
-exports.generatePassword = async function() {
-	return crypto.randomBytes(16).toString('hex')
-}
 exports.ensureAdmin = asyncWrap(async (req, res, next) => {
 	await exports.ensureAuthenticated(req, res)
 	if(!req.user)

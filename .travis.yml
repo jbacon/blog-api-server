@@ -37,11 +37,11 @@ addons:
 before_install:
   - docker pull node:9.3.0-alpine
 install:
-  - docker run --rm --volume ${TRAVIS_BUILD_DIR}/:/app/ node:9.3.0-alpine /bin/sh -c 'cd /app/; npm run build'
+  - docker run --rm --user node --volume ${TRAVIS_BUILD_DIR}/:/home/node/ node:9.3.0-alpine npm install
 before_script:
-  - docker run --rm --volume ${TRAVIS_BUILD_DIR}/:/app/ node:9.3.0-alpine /bin/sh -c 'cd /app/; npm run lint'
+  - docker run --rm --user node --volume ${TRAVIS_BUILD_DIR}/:/home/node/ node:9.3.0-alpine eslint ./
 script:
-  - docker run --rm --volume ${TRAVIS_BUILD_DIR}/:/app/ node:9.3.0-alpine /bin/sh -c 'cd /app/; npm run test'
+  - docker run --rm --user node --volume ${TRAVIS_BUILD_DIR}/:/home/node/ node:9.3.0-alpine npm test
 before_cache:
   - echo "Before Cache..."
 after_success:

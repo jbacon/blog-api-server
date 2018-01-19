@@ -1,5 +1,10 @@
 var winston = require('winston')
 var expressWinston = require('express-winston')
+var configUtil = require('../common/configUtil')
+const fs = require('fs')
+const { execSync } = require('child_process');
+
+const mkdir = execSync('mkdir -p '+configUtil.logPath);
 
 exports.appLogger = new (winston.Logger) ( {
 	transports: [
@@ -7,7 +12,7 @@ exports.appLogger = new (winston.Logger) ( {
 			json: true,
 			colorize: true,
 			level: 'info',
-			filename: 'logs/app.log',
+			filename: configUtil.logPath+'/app.log',
 			maxsize: 2000000,
 			maxFiles: 10,
 			tailable: true
@@ -26,7 +31,7 @@ exports.requestLoggingMiddleware = expressWinston.logger({
 				json: true,
 				colorize: true,
 				level: 'info',
-				filename: 'logs/requests.log',
+				filename: configUtil.logPath+'/requests.log',
 				maxsize: 2000000,
 				maxFiles: 10,
 				tailable: true
@@ -45,7 +50,7 @@ exports.errorLoggingMiddleware = expressWinston.errorLogger({
 				json: true,
 				colorize: true,
 				level: 'info',
-				filename: 'logs/errors.log',
+				filename: configUtil.logPath+'/errors.log',
 				maxsize: 2000000,
 				maxFiles: 10,
 				tailable: true

@@ -3,38 +3,45 @@ services:
   portfolio-proxy:
     image: nginx:1.13.8-alpine
     container_name: portfolio-proxy
-    depends_on:
-      - portfolio-api
+    user: nginx
+    working_dir: /home/nginx/
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
-      - /etc/letsencrypt/live/portfolioapi.joshbacon.name/fullchain.pem:/fullchain.1pem
-      - /etc/letsencrypt/live/portfolioapi.joshbacon.name/privkey.pem:/privkey1.pem
+      - /etc/letsencrypt/live/portfolioapi.joshbacon.name/fullchain.pem:/home/nginx/fullchain.1pem
+      - /etc/letsencrypt/live/portfolioapi.joshbacon.name/privkey.pem:/home/nginx/privkey1.pem
     ports:
       - 443:443
       - 80:80
+    depends_on:
+      - portfolio-api
     links:
       - portfolio-api
   portfolio-api:
     image: node:9.3.0-alpine
     container_name: portfolio-api
-    command: /bin/sh -c 'cd /app/; npm install; npm run start;'
-    depends_on:
-      - portfolio-db-init
+    user: node
+    working_dir: /home/node/
+    command: /bin/sh -c 'npm install; npm start;'
     environment:
-      - PORTFOLIO_CONFIG_FILE=configs-prod.json
+      - PORTFOLIO_CONFIG_PASSWORD=${PORTFOLIO_CONFIG_PASSWORD}
+      - PORTFOLIO_CONFIG_FILE_PATH=/home/node/configs-prod.json
     ports:
       - 9229:9229
       - 3000:3000
     volumes:
-      - ./:/app/
+      - ./:/home/node/
+    depends_on:
+      - portfolio-db-init
     links:
       - portfolio-db
   portfolio-db-init:
     image: mongo:3.6.1
-    command: mongo --nodb /mongo-setup.js
+    command: mongo --nodb /home/mongodb/mongo-setup.js
     container_name: portfolio-db-init
+    user: mongodb
+    working_dir: /home/mongodb/
     volumes:
-      - ./mongo-setup.js:/mongo-setup.js
+      - ./mongo-setup.js:/home/mongodb/mongo-setup.js
     depends_on:
       - portfolio-db
     links:
@@ -42,9 +49,13 @@ services:
   portfolio-db:
     image: mongo:3.6.1
     command: mongod
+    working_dir: /home/mongodb/
     container_name: portfolio-db
+    user: mongodb
     volumes:
       - ./data/db:/data/db
       - ./mongod.conf:/etc/mongod.conf
     expose:
      - "27017"
+    depends_on:
+      - portfolio-db
