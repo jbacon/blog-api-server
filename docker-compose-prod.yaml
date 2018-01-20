@@ -20,16 +20,16 @@ services:
     image: node:9.3.0-alpine
     container_name: portfolio-api
     user: node
-    working_dir: /home/node/
-    command: /bin/sh -c 'npm install; npm start;'
+    working_dir: /home/node/app/
+    command: /bin/sh -c 'cd /home/node/app/; node ./bin/www;'
     environment:
       - PORTFOLIO_CONFIG_PASSWORD=${PORTFOLIO_CONFIG_PASSWORD}
-      - PORTFOLIO_CONFIG_FILE_PATH=/home/node/configs-prod.json
+      - PORTFOLIO_CONFIG_FILE_PATH=/home/node/app/configs-prod.json
     ports:
       - 9229:9229
       - 3000:3000
     volumes:
-      - ./:/home/node/
+      - ./:/home/node/app/
     depends_on:
       - portfolio-db-init
     links:

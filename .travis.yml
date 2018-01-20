@@ -18,30 +18,18 @@ env:
     # - secure: "S0MIsXFqqv308zsrUyiTUOc+LDNbW0a/0PY6RdZQakkE376V/n7E+jIZmdHAdhY8oWkpav+bd+OPVRSlHr7AvOsXDaRpOzZbn24a8JXvilbROSRe0/ObtrRTL7XM77yBSZqF2ydcfXYTOtPsxCOV1f130wuacTVrMUZGKYAM0c+POh/wF3wEay/eUQ60nA68S5oakju1VxfY4u/eAUZ8uTzVlp7nctR0/51aq74F559CIj7Lqt4eu0Vh3vVm9omei6EWRwlhyClvOXZy21Wrk3xeuewjBMefR474IBol2WxTIwHjgj+lW4cv//kHCDu473ZsRVP37wdzyvxIG0SK9jK/m/YB2YWQwdCDx8tg3eOQIcmPbvf8/6avKzVEKMq9X7rlsr81PVhDXMhHRRG6DIedMcvWGrByz2VH8YrPvIYrbN5pu02P1VmwXkYb8jzcRl47xCoFwb3vIAkXYZLJHCgM3CyuIYHJwM2qOt5XAuUCUzCo00L1wqnQlrZhHukgyC/YRtyGBpY4VHPXE1bcHvVwR9iCAVzFLGqGqxNG+KOAi/JoUsblPhC80xgu5OU39PCeZpELQ/2GIFLDkFeMisOsGKq2fwqhaFqAsljhU3zVNZ5hqaDXniVnBI97d3bNgu1ES/wRB8R2VZyGC4EC4NR0Nxdvljt2TUHw1ZD3Cow="
     # AWS_SECRET_ACCESS_KEY
     # - secure: "eK7yLubDryGbVlTooIOLgVtwyHEqwNXCN98N362YZwoRIncybadAcc0Om+sUgjnE0fMKHPTaDRldeTncfoOzgfnks7h1Md93mkPgk0YmICoM6U0aUwq+V7UPl16DbWegE0vvBQXWtyi9OU9veTxLsANBq4rjU13GC00joSlBJw3kIGb0himcteZdT1t+cQIFEg3OIzna8VKAMBZLr6KKwpzuo7ZzxR2LJUe5dOzPduLl1cE8+mGCmI9HWf0nDIyPyrh+po6OdbVC/8We0GxQEJISeKi1R6D273isX/RMsv7QS13EVpe0XTYTMMtwrKfXZFWeXL0pQPS1SztPip9qha1akkLT29okd/fqobRKygnQwlQ5S+n2J1Pkmxlf0fRWMsdAL9zyk5/qVjBWrda3pZGenYTs8M6XFk2put4u4BZb2UwVH8GyqnCLyfK2wcXQRf5nFU5uuFL3Cdl2ueV2//e+tULRAi89Ff5yHOukraeRriK7ruSpmkLA5MlpRWYkl1ui1vAeqxQoCoPlOYsQLTQr22w7EI6AWnANuewt3fGi8Xv4d91EGsEOvMHlHFr7M9jvJg0vsXhQvYutJSKHkZals6ZqKpcLKQOvS3TDOp3uPZfqcJFXnYlNkiLMfq3qWRrzCvID7X75SWi7jchF2YsrkLQXifxWE9KwV/F+f/Y="
-    # - PORTFOLIO_ENVIRONMENT=production
-    # - PORTFOLIO_ADMIN_EMAIL
-    # # PORTFOLIO_FACEBOOK_APP_SECRET
-    # - secure: "Z8dAul1sS2h2xNowSJ/A8Xtyz84NpN4+ghIxXFXlKfzjziLwP/q2DV5ay22hvWf7+kfg+bld7//QSNMcm409wHAHb7LnqqofGi3Br+kqEr4AlqKQI0MY2kh2N7Q3xXAPID4HOSL4IKJRXVF3Nix3pWw3U5uHUT+jIGngSLlfdtgsB6K59dYPWCBYYhekvNDRVUTBejFTfD1m7g91VILyzIcgZZDmYRlVGpnTuD9xjZVmzwEpLh+ypc7RpreOLQ4zo9HBcC35TQcREBH/fwONsRRN+vyQlU8KYIQSUJoatP4FAab2TTsYifx1OmVnADfZfv2H28u5TXZNOkdXcPfLc5fLNR5isg3mdQA6ls1kUwl+1fUKPVAUaYehrCzC2y8O8ZqpQM0qpEVhs98kXX2bLiPjYwag1rbhUfHMA1sJ0n+wXQWZL366NexbBnPKIX/or+2GcviRJ/nwUE8pgSseWSmtB2dml1CBRf7W6+c8kLI/n61eSIaj3+ZSyzkjzHyCi6T9c1JiLKWOlScYIFDJAq5/CDMVDykVMlrNCF2LJnsNJnWd4GXVZjXEEvgeQJKdu/5ax1hQls6FwvzxveiRsfoygFuke3W3dHvFEkz+RX+jPLQ7cr9bB1xxem9exzytbn/6sDcWbx+gTMN2xRgeKTULv579ixONoykqqEYxd0Y="
-    # # PORTFOLIO_GOOGLE_APP_SECRET
-    # - secure: "oibAz75HpetQeJgsYIngaXOVwCaN46tbKQ0Py9kkB2QnbLT+C7TPBUU6ZHavo4BksyNPiM1UZ5hLuLgONJ5VIptulJSZau+bKbDR4VuFB24g97oSUumsGAPz28oGu8tBGUoP40Rfzh2W0AMVuJgz+7Dn8ddf2aczzfPXrOiagoTbtMXdyycrmBMxGI3R6Y7dLLNV5CtsQckqACf334u+YHbNjbWVIT7pTE8cZByuFUimz08L7NmOj9ECDHAbP5/30CXdRtFnqSj/J9J5GoHZXP8o2jr/tbbTi0avd0oo+vrpFk68fKpYkw5FYSV5ZQRYCHish8QLCtpKRxoKFjEXo5wlJh+9sdJxvZ23lwPANsjiXSBzCvtRoZPfyb3c9ZHGuaKpIQsuy0dhMOjaHZ9GE02fSghGCjIQ7vqKivxJccIoXGV6fAPWepl21YYSa5uwkLUWze2uth9W4COIYAe/ZT2EwPSR2QVhfaikD27a8sstlLb2tW0yGz3MfEiw/xB7zfsEUpXwZGzglJ0p8lc0GFaYN62KFohh48sbSAl2NxvmHh/8qnZ9YyQBsEUBlnnRdIi/hytPbbbdB5sE4IO1/3+6jgAMZyimPrL2bNPMyM3xBhGGGQbspQ/hBuL33sf3jadTnEecAYlUiu2X+5fN8t71QHpqk+fEnvhiLxFiAPk="
-    # # PORTFOLIO_GOOGLE_GMAIL_ACCESS_TOKEN
-    # - secure: "xuObFObB4bD1ibo3ELWpSRmyLNpJDx7vRo/y97mIMVvUVtRJtXQBmP7QXO4NXwwfLYwcbb8egTRLjVtbTqZUNVmHk0wPmtJ0vUd+V8yGQIs1sJrE3cDpEov9Yo+qx8tMI7LVzWA4JVOBVGjuuk5km3gj6oYgaV1NbFe1W9SPt9vUDxxkz5iARxkqKOeu2Il1DYuoc6DHWLcJEBzzyk0RjCEMWlGQTHw7+Kxx4mIhC4ZTYjJQ15X9VyiSvXy2NV6JKV2hqj+AN9izk3XwSQY/BykeDDAAhJ2w/dbnxaYkYHZUKTZmeOYTbZ34K4PENCAizKkZ2a9TPZ8L8qWPAL1/Msi8WCA7/TpDemRs7hL3GG5tNBwLIvgI+zHcoxfByK0CS05ip/rhFjPT3P9sjjeO8PfJyicJeRmqIC9a3rHd6YlYcFcy+Mu4n4NzqHmzUPUtoONIDnawdH8vphpC3aHeeqkDK/ibn7Yv3F9Z+Sc40LlgcA9PPM9O+pR1yGC04Xr58NPlQmjNA+BWJGxm6LxgIek8w/uC4ProlSQb+OLC9wdlMrSsyKfuemCcItzXd+or8GibIFoY9bMqU9WEiENL0+CjOAI21RRo5L6uBSTRF6/1AVchWcAsQk3iy4Dk9QpjMc8C0bIVBOCOY88PmqPkdzvfCzYCaificYRRWKJE980="
-    # # PORTFOLIO_GOOGLE_GMAIL_REFRESH_TOKEN
-    # - secure: "QdevdSE+jaUHXVO2YGLw3leMx0azpuLa+qQ0Sj9Szb97S+eAXVIoFLQ7smb1CZ9JnjWDS+cPV52Vua4AkgRDp/5akcMLDdJvkiUCEYTLuxdANYTVgMigeYkRmil+y1WcByUqPkHJOl16FtTyrCJZdQE5oni6HHPp3OrwvfvCkDbh6U4Vo2B1/wTVq/U68Qr9anpZGo31hl/t8enhjVdcFgyN2sAxAKFPBxtwvo/VGaROR2ijXQdIkBiX16tJqtLYoNmyZ/SPFQwu9pckh1gvwxay8J3u+ckmfny2FlnrrCTRC1QTZ2DMFEroE7eH5F0qFk2DcZ+jky+1QcIHTiIUCj83/PlF3rEjT2iC/rBN/2rbHcescmTwk4vXhAEV9HxFperFheEqsJEG4DsB4Uzgz0Uk6jXfn8iejx9lidw8M2htYeAJLHemD7qVtvgdCG0R1d9hQ/k3iPbmoNwb5J62DgdGbNkkI9OWmPsnK+Qfrukkoyh+cSysARHgh1NV3xlTG7ql/49/E9INerwsyd+XOq7nmW2o5EqOvmo6/WuWFIAXzm7nYDa4wezIuwehKwNUxtatcGp+0A4pf3Rhtx5cR3l6tXYqVamFiODMS6BrwU8pkwbd5QrpKlWpQhCaM33FsDHtSg64OzjAwL0FPJg7FOPvtTJEWdyxCJEKDG1+f+s="
-    # # PORTFOLIO_ADMIN_PASSWORD
-    # - secure: "dR94cR2SjQZjZYPEDlIzsq0TASJnLBmp6E0FDlgPSXc0nRuM8zmMl3y2RNFK9Woi2+UKAvO6G7t5HatYOKFPwpTDoyjoekrHtk3fpfBh83HNwCDzVAbApRL0qzABt06iM5ZwkRixY61+EpHgFSu2BLglKIfJYuha4mcNjA0a187YjugDkwf0scp9cgdRCk0kWjAETIGVoCX/sFO9ef4aU/VbanvcfXsHnx8BSpP/hjXkltRUsP+T4SbtfJGPbTLRB34a6ZnMSoHvgHgGG8YhfWllIiT1mO/Bfz/7kTBn0ZkRsYualjQUcaXHugcch7zZ5KwESXe4pm4dB/G8t0+3zEq4eGbFq2FzHq475RJ277xKt4pFaKgO9IoQ2xj/5M1y0QcU0dYkUtejn1VI/bSrK7S8waZwsFNuDAwM+HcWUttJF+YEA1HVCBquXG9YJb1VLvqubb8VFygbIrYXf17YxXp6/gUBTp2/v90eZws6ZdtXhnwc+JPparno7naQaa2j7Bd9YA03F2ty+c80YKxpaDSPSFjDerzcU5YSnohKB9bog58igvYpxYuFbkzwtdJlmBz6yWlSyieM70zrcOMZl2e/wVkpJj+8Im9lxAYYn/3QWKAJzA9iVqy4rwy3lXqp0WMILRLPmaAi6PSuu0Ucf+l3ITD9G5ZSTXds04ARROA="
-    # # PORTFOLIO_JWT_SECRET
-    # - secure: "TUA13w6ClQIuYDIhLjKjTGgVAmcK753G0OrNOXel+u4v9TpLodHImFyuZ0Cj4FD4q9muJxskLwnx6yB8gFEC7SAgToj13+mn1x1v63+WTaq3b7dCXTjmRllC00dtVSu/rrnkwL9yKr/WUMOzf4UrAm0K44+0ZREzZgRry4R3lL8cXZpEGbFV3dHQ303lqltOupeEW3WsRKN3VOpzDEFvCNBErmK5YFio4qjkERREoymp1n1hkzOOmgkbV2YIyiN/QRElxuZ4rNY2UxE7gKlxNclpQoR+GCTKsxXWx74u/+Khmaygqzo98zr0McCg7uTl7nVDOnedBTIqayXzW0yhAdqGu035pKhdObf7OoExLUakWlk4ftigen6TWcW2o20kvYaVZc2NKNKGRhJe1cx8l5bYUVvw/rxSFxIDE31rNTlXNVX5UcHamWm/0AOn/3ZgJ5490bjVm+EK6VxXmIRnlgADcztNkkUdqzCkM+Udo5MVv7yztK29Zl7uw6qGfVXuA7qa/gYjbqLUWPsu7We52klSPkos5n77vX3E1P99LTt7KKiRq040SVTbkQmk1+vY+1u6woCAspEVt18FIAKwwXTwmi/CzkQ22ci9CEUSRNT84BPZqtgtw77oThldIzRC/uN8h9SJbtjLGzNcokkMKh+FpQ8yJIZ+YRVh69Iu/3Q="
+    # PORTFOLIO_CONFIG_PASSWORD
+    # - secure: ""
 addons:
   ssh_known_hosts: portfolioapi.joshbacon.name
 before_install:
   - docker pull node:9.3.0-alpine
 install:
-  - docker run --rm --user node --workdir /home/node/ --volume ${TRAVIS_BUILD_DIR}/:/home/node/ node:9.3.0-alpine npm install
+  - docker run --rm --user node --workdir /home/node/app/ --volume ${TRAVIS_BUILD_DIR}/:/home/node/app/ node:9.3.0-alpine npm install --production
 before_script:
-  - docker run --rm --user node --workdir /home/node/ --volume ${TRAVIS_BUILD_DIR}/:/home/node/ node:9.3.0-alpine eslint ./
+  - docker run --rm --user node --workdir /home/node/app/ --volume ${TRAVIS_BUILD_DIR}/:/home/node/app/ node:9.3.0-alpine eslint ./
 script:
-  - docker run --rm --user node --workdir /home/node/ --volume ${TRAVIS_BUILD_DIR}/:/home/node/ node:9.3.0-alpine npm test
+  - docker run --rm --user node --workdir /home/node/app/ --volume ${TRAVIS_BUILD_DIR}/:/home/node/app/ node:9.3.0-alpine npm test
 before_cache:
   - echo "Before Cache..."
 after_success:

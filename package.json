@@ -4,9 +4,7 @@
   "author": "Josh Bacon",
   "description": "Node Express API Server for Josh Bacon's Public Portfolio Web App.",
   "main": "./bin/www",
-  "scripts": {
-    "start": "node --inspect=0.0.0.0:9229 ./bin/www"
-  },
+  "scripts": {},
   "license": "ISC",
   "dependencies": {
     "express": "latest",
