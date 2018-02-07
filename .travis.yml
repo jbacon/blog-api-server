@@ -27,7 +27,7 @@ before_install:
 install:
   - docker run --rm --workdir /home/node/app/ --volume ${TRAVIS_BUILD_DIR}/:/home/node/app/ node:9.3.0-alpine npm install
 before_script:
-  - docker run --rm --workdir /home/node/app/ --volume ${TRAVIS_BUILD_DIR}/:/home/node/app/ node:9.3.0-alpine eslint ./
+  - docker run --rm --workdir /home/node/app/ --volume ${TRAVIS_BUILD_DIR}/:/home/node/app/ node:9.3.0-alpine ./node_modules/.bin/eslint ./
 script:
   - docker run --rm --workdir /home/node/app/ --volume ${TRAVIS_BUILD_DIR}/:/home/node/app/ node:9.3.0-alpine npm test
 before_cache:

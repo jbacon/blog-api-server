@@ -1,10 +1,10 @@
 var winston = require('winston')
 var expressWinston = require('express-winston')
 var configUtil = require('../common/configUtil')
-const fs = require('fs')
-const { execSync } = require('child_process');
+// const fs = require('fs')
+const { execSync } = require('child_process')
 
-const mkdir = execSync('mkdir -p '+configUtil.logPath);
+execSync('mkdir -p '+configUtil.logPath)
 
 exports.appLogger = new (winston.Logger) ( {
 	transports: [

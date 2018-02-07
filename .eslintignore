@@ -1,2 +1,3 @@
 /mongo-setup.js
 /node_modules/*
+mongodb-init-script.js

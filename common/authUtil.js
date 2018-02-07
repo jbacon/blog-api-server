@@ -12,7 +12,7 @@ var FacebookTokenStrategy = require('passport-facebook-token')
 var GoogleTokenStrategy = require('passport-google-token').Strategy
 var asyncWrap = require('../common/asyncUtil').asyncWrap
 // var LinkedInTokenStratey = require('passport-linkedin-oauth2').Strategy //Not able to use for login, doesn't support implicit grant
-var crypto = require('crypto')
+// var crypto = require('crypto')
 
 exports.getPassport = function() {
 	return passport
