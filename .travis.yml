@@ -9,9 +9,9 @@ git:
 branches:
   only:
   - master
-cache:
-  directories:
-    - "node_modules"
+# cache:
+#   directories:
+#     - "node_modules"
 env:
   global:
     # AWS_ACCESS_KEY_ID
@@ -25,7 +25,7 @@ addons:
 before_install:
   - docker pull node:9.3.0-alpine
 install:
-  - docker run --rm --workdir /home/node/app/ --volume ${TRAVIS_BUILD_DIR}/:/home/node/app/ node:9.3.0-alpine npm install --production
+  - docker run --rm --workdir /home/node/app/ --volume ${TRAVIS_BUILD_DIR}/:/home/node/app/ node:9.3.0-alpine npm install
 before_script:
   - docker run --rm --workdir /home/node/app/ --volume ${TRAVIS_BUILD_DIR}/:/home/node/app/ node:9.3.0-alpine eslint ./
 script:
