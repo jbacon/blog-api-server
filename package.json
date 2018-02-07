@@ -22,7 +22,9 @@
     "validator": "latest",
     "bcryptjs": "latest",
     "nodemailer": "latest",
-    "jsonwebtoken": "latest"
+    "jsonwebtoken": "latest",
+    "eslint": "latest",
+    "apidoc": "latest"
   },
   "devDependencies": {
     "eslint": "latest",
