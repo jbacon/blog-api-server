@@ -5,5 +5,5 @@ eval "$(ssh-agent -s)"
 ssh-add id_rsa
 rm -f id_rsa
 ssh portfolio@portfolioapi.joshbacon.name docker-compose -f /home/portfolio/api-server/docker-compose-prod.yaml down --remove-orphans
-rsync -r --delete-after --quiet --exclude .git/ ${TRAVIS_BUILD_DIR}/ portfolio@portfolioapi.joshbacon.name:/home/portfolio/api-server/
+rsync -r --delete-after --exclude .git/ ${TRAVIS_BUILD_DIR}/ portfolio@portfolioapi.joshbacon.name:/home/portfolio/api-server/
 ssh portfolio@portfolioapi.joshbacon.name docker-compose -f /home/portfolio/api-server/docker-compose-prod.yaml up -d --remove-orphans --force-recreate
