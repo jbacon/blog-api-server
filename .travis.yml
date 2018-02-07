@@ -23,8 +23,6 @@ env:
 addons:
   ssh_known_hosts: portfolioapi.joshbacon.name
 before_install:
-  - apt-get update
-  - chown 100
   - docker pull node:9.3.0-alpine
 install:
   - docker run --rm --user node --workdir /home/node/app/ --volume ${TRAVIS_BUILD_DIR}/:/home/node/app/ node:9.3.0-alpine npm install --production
