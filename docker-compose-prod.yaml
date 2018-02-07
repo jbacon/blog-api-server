@@ -19,7 +19,7 @@ services:
   portfolio-api:
     image: node:9.3.0-alpine
     container_name: portfolio-api
-    user: node
+    # user: node
     working_dir: /home/node/app/
     command: /bin/sh -c 'cd /home/node/app/; node ./bin/www;'
     environment:
