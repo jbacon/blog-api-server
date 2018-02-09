@@ -5,7 +5,7 @@ services:
     container_name: portfolio-api
     user: node
     working_dir: /home/node/app/
-    command: /bin/sh -c 'cd /home/node/app; npm install; node --inspect=0.0.0.0 ./bin/www;'
+    command: /bin/sh -c 'npm install; node --inspect=0.0.0.0 ./bin/www;'
     environment:
       - PORTFOLIO_CONFIG_PASSWORD=${PORTFOLIO_CONFIG_PASSWORD}
       - PORTFOLIO_CONFIG_FILE_PATH=/home/node/app/configs-local.json
@@ -20,7 +20,6 @@ services:
       - portfolio-db
   portfolio-db:
     image: mongo:3.6.1
-    # command: mongod
     user: mongodb
     working_dir: /home/mongodb/
     container_name: portfolio-db
