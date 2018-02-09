@@ -3,11 +3,12 @@ var CustomError = require('../common/errorUtil')
 var mongoClient
 
 exports.connect = async (url) => {
-	if(mongoClient) throw new CustomError({ message: 'Already connected', status: 500 })
-	mongoClient = await mongodb.MongoClient.connect(url, {
-		ignoreUndefined: true,
-		serializeFunctions: true
-	})
+	if(!mongoClient) {
+		mongoClient = await mongodb.MongoClient.connect(url, {
+			ignoreUndefined: true,
+			serializeFunctions: true
+		})
+	}
 }
 exports.close = async () => {
 	if(!mongoClient) throw new CustomError({ message: 'Already disconnected', status: 500 })

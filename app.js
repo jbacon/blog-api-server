@@ -39,7 +39,7 @@ app.use(asyncWrap(async (req, res, next) => {
 app.use('/comments', routesComments)
 app.use('/auth', routesAuth)
 app.use('/account', routesAccounts)
-app.use(asyncWrap(async (/*req, res, next*/) => {
+app.use(asyncWrap(async (req, res, next) => {
 	throw new CustomError({
 		message: 'API route not found',
 		status: 404
@@ -48,7 +48,7 @@ app.use(asyncWrap(async (/*req, res, next*/) => {
 // ERROR LOGGING (AFTER routers BEFORE handlers)
 app.use(commonLogging.errorLoggingMiddleware)
 // ERROR HANDLERS
-app.use(function(err, req, res/*, next*/) {
+app.use(function(err, req, res, next) {
 	commonLogging.appLogger.error(err)
 	res.status(err.status || 500)
 	var response = null

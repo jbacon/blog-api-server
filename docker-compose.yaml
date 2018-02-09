@@ -25,7 +25,9 @@ services:
     container_name: portfolio-db
     volumes:
       - ./mongodb-init-script.js:/docker-entrypoint-initdb.d/mongodb-init-script.js
-      - ./data/:/home/mongodb/data/
+      - portfolio-db-data:/home/mongodb/data/
       - ./mongod.conf:/etc/mongod.conf
     expose:
      - "27017"
+volumes:
+  portfolio-db-data:
