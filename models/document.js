@@ -1,5 +1,6 @@
+var path = require('path')
 var mongodb = require('mongodb')
-var mongoUtil = require('../common/mongoUtil')
+var mongoUtil = require(path.resolve('.', 'common/utils/mongo.js'))
 
 module.exports = class Document {
 	constructor(json) {

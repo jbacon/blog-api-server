@@ -1,14 +1,15 @@
+var path = require('path')
 var express = require('express')
-var Comment = require('../model/comments')
-var Account = require('../model/accounts')
+var Comment = require(path.resolve('.', 'models/comments.js'))
+var Account = require(path.resolve('.', 'models/accounts.js'))
 var mongodb = require('mongodb')
-var mongoUtil = require('../common/mongoUtil')
-var commonAuth = require('../common/authUtil')
-var emailUtil = require('../common/emailUtil')
-var configUtil = require('../common/configUtil')
-var CustomError = require('../common/errorUtil')
-var asyncWrap = require('../common/asyncUtil').asyncWrap
-const logger = require('../common/loggingUtil').appLogger
+var mongoUtil = require(path.resolve('.', 'common/utils/mongo.js'))
+var commonAuth = require(path.resolve('.', 'common/utils/auth.js'))
+var emailUtil = require(path.resolve('.', 'common/utils/email.js'))
+var configUtil = require(path.resolve('.', 'common/utils/config.js'))
+var CustomError = require(path.resolve('.', 'common/utils/error.js'))
+var asyncWrap = require(path.resolve('.', 'common/utils/async.js')).asyncWrap
+const logger = require(path.resolve('.', 'common/utils/logging.js')).appLogger
 var router = express.Router()
 
 router.post('/create', asyncWrap(async (req, res/*, next*/) => {

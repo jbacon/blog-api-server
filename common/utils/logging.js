@@ -1,6 +1,7 @@
+var path = require('path')
 var winston = require('winston')
 var expressWinston = require('express-winston')
-var configUtil = require('../common/configUtil')
+var configUtil = require(path.resolve('.', 'common/utils/config.js'))
 // const fs = require('fs')
 const { execSync } = require('child_process')
 

@@ -1,8 +1,9 @@
-var mongoUtil = require('../common/mongoUtil')
-var Document = require('../model/document')
-var Account = require('../model/accounts')
+var path = require('path')
+var mongoUtil = require(path.resolve('.', 'common/utils/mongo.js'))
+var Document = require(path.resolve('.', 'models/document.js'))
+var Account = require(path.resolve('.', 'models/accounts.js'))
 var validator = require('validator')
-var CustomError = require('../common/errorUtil')
+var CustomError = require(path.resolve('.', 'common/utils/error.js'))
 
 module.exports = class Comment extends Document {
 	static get COLLECTION_NAME() {

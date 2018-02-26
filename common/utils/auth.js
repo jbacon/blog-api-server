@@ -1,16 +1,17 @@
+var path = require('path')
 var bcrypt = require('bcryptjs')
 var jwt = require('jsonwebtoken')
-var configUtil = require('../common/configUtil')
-var emailUtil = require('../common/emailUtil')
-var Account = require('../model/accounts')
+var configUtil = require(path.resolve('.', 'common/utils/config.js'))
+var emailUtil = require(path.resolve('.', 'common/utils/email.js'))
+var Account = require(path.resolve('.', 'models/accounts.js'))
 var passport = require('passport') // Authentication Framework
 var LocalStrategy = require('passport-local').Strategy // Authentication Strategy
 var JwtStrategy = require('passport-jwt').Strategy
-var CustomError = require('../common/errorUtil')
-var mongoUtil = require('../common/mongoUtil')
+var CustomError = require(path.resolve('.', 'common/utils/error.js'))
+var mongoUtil = require(path.resolve('.', 'common/utils/mongo.js'))
 var FacebookTokenStrategy = require('passport-facebook-token')
 var GoogleTokenStrategy = require('passport-google-token').Strategy
-var asyncWrap = require('../common/asyncUtil').asyncWrap
+var asyncWrap = require(path.resolve('.', 'common/utils/async.js')).asyncWrap
 // var LinkedInTokenStratey = require('passport-linkedin-oauth2').Strategy //Not able to use for login, doesn't support implicit grant
 // var crypto = require('crypto')
 

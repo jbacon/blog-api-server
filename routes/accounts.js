@@ -1,11 +1,12 @@
+var path = require('path')
 var express = require('express')
-var mongoUtil = require('../common/mongoUtil')
-var Account = require('../model/accounts')
-var commonAuth = require('../common/authUtil')
-var CustomError = require('../common/errorUtil')
+var mongoUtil = require(path.resolve('.', 'common/utils/mongo.js'))
+var Account = require(path.resolve('.', 'models/accounts.js'))
+var commonAuth = require(path.resolve('.', 'common/utils/auth.js'))
+var CustomError = require(path.resolve('.', 'common/utils/error.js'))
 var bcrypt = require('bcryptjs')
 var validator = require('validator')
-var asyncWrap = require('../common/asyncUtil').asyncWrap
+var asyncWrap = require(path.resolve('.', 'common/utils/async.js')).asyncWrap
 var router = express.Router()
 
 /**

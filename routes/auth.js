@@ -1,14 +1,15 @@
+var path = require('path')
 var express = require('express')
-var Account = require('../model/accounts')
+var Account = require(path.resolve('.', 'models/accounts.js'))
 var bcrypt = require('bcryptjs')
-var authUtil = require('../common/authUtil')
-var mongoUtil = require('../common/mongoUtil')
+var authUtil = require(path.resolve('.', 'common/utils/auth.js'))
+var mongoUtil = require(path.resolve('.', 'common/utils/mongo.js'))
 var validator = require('validator')
-var CustomError = require('../common/errorUtil')
-var emailUtil = require('../common/emailUtil')
-var configUtil = require('../common/configUtil')
-var asyncWrap = require('../common/asyncUtil').asyncWrap
-const logger = require('../common/loggingUtil').appLogger
+var CustomError = require(path.resolve('.', 'common/utils/error.js'))
+var emailUtil = require(path.resolve('.', 'common/utils/email.js'))
+var configUtil = require(path.resolve('.', 'common/utils/config.js'))
+var asyncWrap = require(path.resolve('.', 'common/utils/async.js')).asyncWrap
+const logger = require(path.resolve('.', 'common/utils/logging.js')).appLogger
 var router = express.Router()
 
 async function respondWithToken(req, res/*, next*/) {

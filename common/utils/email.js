@@ -1,8 +1,9 @@
+var path = require('path')
 const nodemailer = require('nodemailer')
-var configUtil = require('../common/configUtil')
+var configUtil = require(path.resolve('.', 'common/utils/config.js'))
 var validator = require('validator')
-var CustomError = require('../common/errorUtil')
-var logger = require('../common/loggingUtil').appLogger
+var CustomError = require(path.resolve('.', 'common/utils/error.js'))
+var logger = require(path.resolve('.', 'common/utils/logging.js')).appLogger
 
 exports.transporter = nodemailer.createTransport({
 	// service: 'gmail',

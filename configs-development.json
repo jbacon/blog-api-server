@@ -1,5 +1,4 @@
 {
-	"environment": "production",
 	"jwtSecret": "6f577f6990bdd1d997248c84030702d9:c03314d594dd50272cdac318f6518620:39ebdd40774df868300b56f59eb877343e4ca5b646643d492f15438b4771b9b4",
 	"sessionSecret": "b4349c366dd49c21f3b05aefbc2095ca:a8a5b5caefba1f9af0550531684c1698:949e769646db48cacb9a70d5d9034d60622faa300777435dac774de2fcbac654",
 	"linkedInAppID": "86si1hmxm82gf9",
@@ -15,9 +14,9 @@
 	"adminNameFirst": "Josh",
 	"adminNameLast": "Bacon",
 	"adminPassword": "e0499b7b2599a91ddda682c72570608a:fd91df188ccb04c37237363e14c2d63c:be0d03f2739b6eec7ad3ce829c83de39",
-	"serverPort": "",
-	"serverUrl": "https://portfolioapi.joshbacon.name",
-	"sitePort": "",
-	"siteUrl": "https://portfolio.joshbacon.name",
-	"mongoDbUrl": "mongodb://portfolio-db:27017/portfolio"
+	"serverPort": "3000",
+	"serverUrl": "http://localhost",
+	"sitePort": "8081",
+	"siteUrl": "http://localhost",
+	"mongoDbUrl":"c1e3e2e3c7483abbd15745d830223e6a:0f312b7d9f8f4a4868b1e570b6b4e427:10a2f2dbbddf4810c4bfbef005150759ad5078d8f25e1a8917fc9371ba970302e6548e640ffbcf6ec4f6725743f482b9d81d91442f9f6667209468117b7159ea49ae90df41148618448e98591fd7d0a0"
 }

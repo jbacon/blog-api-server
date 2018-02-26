@@ -1,20 +1,100 @@
 #!/usr/bin/env node
-
-var app = require("../app")
-// var debug = require("debug")("ApiServer:server")
+var path = require('path')
 var http = require("http")
-const commonConfig = require("../common/configUtil")
-const mongoUtil = require('../common/mongoUtil')
-const logger = require('../common/loggingUtil').appLogger
-const errorUtil = require('../common/errorUtil')
+var express = require('express')
+var favicon = require('serve-favicon')
+var cookieParser = require('cookie-parser')
+var bodyParser = require('body-parser')
+var logger = require(path.resolve('.', 'common/utils/logging.js')).appLogger
+var routesComments = require(path.resolve('.', 'routes/comments.js'))
+var routesAuth = require(path.resolve('.', 'routes/auth.js'))
+var routesAccounts = require(path.resolve('.', 'routes/accounts.js'))
+var commonLogging = require(path.resolve('.', 'common/utils/logging.js'))
+var CustomError = require(path.resolve('.', 'common/utils/error.js'))
+var mongoUtil = require(path.resolve('.', 'common/utils/mongo.js'))
+var commonAuth = require(path.resolve('.', 'common/utils/auth.js'))
+var commonConfig = require(path.resolve('.', 'common/utils/config.js'))
+var asyncWrap = require(path.resolve('.', 'common/utils/async.js')).asyncWrap
 
-var port = normalizePort(commonConfig.serverPort || "3000")
+var app = express()
+app.disable('x-powered-by')
+app.use(express.static(path.resolve('.', 'public')))
+app.use(favicon(path.resolve('.', 'favicon.ico')))
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true })) // Extended true always nested objects in req.body
+app.use(cookieParser())
+app.use(commonAuth.getPassport().initialize())
+// REQUEST LOGGING (BEFORE the routers)
+app.use(commonLogging.requestLoggingMiddleware)
+// MY MIDDLEWARE
+// Allow CORS //https://enable-cors.org/server_expressjs.html
+app.use(asyncWrap(async (req, res, next) => {
+	res.header('Access-Control-Allow-Origin', '*')
+	res.header('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS,POST,PUT')
+	res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Bearer')
+	next()
+}))
+// ROUTERS
+app.route('/')
+	.get(function (req, res) {
+		res.json('Hello, you\'ve just hit my public endpoint. And who am I? Come visit me at: https://portfolio.joshbacon.name/')
+	})
+app.use('/comments', routesComments)
+app.use('/auth', routesAuth)
+app.use('/account', routesAccounts)
+
+app.use(asyncWrap(async (req, res, next) => {
+	next
+	req
+	res
+	throw new CustomError({
+		message: 'API route not found',
+		status: 404
+	})
+}))
+// ERROR LOGGING (AFTER routers BEFORE handlers)
+app.use(commonLogging.errorLoggingMiddleware)
+// ERROR HANDLERS
+app.use(function(err, req, res, next) {
+	next
+	commonLogging.appLogger.error(err)
+	res.status(err.status || 500)
+	var response = null
+	if(process.env.NODE_ENV === 'development') {
+		response = err.message+'\nStack: '+err.stack
+	}
+	else {
+		response = err.message
+	}
+	res.json(response)
+})
 app.set("port", port)
 
+var port = normalizePort(commonConfig.serverPort || "3000")
+
 var server = http.createServer(app)
-server.listen(port)
-server.on("error", onError)
-server.on("listening", onListening)
+
+mongoUtil.connect(commonConfig.mongoDbUrl)
+	.then(() => { logger.info('Connected to MongoDB ')})
+	.then(mongoUtil.configureDB)
+	.then(() => { logger.info('Configured MongoDB ')})
+	.then(() => {
+		server.on("error", onError)
+		server.on("listening", onListening)
+		server.listen(port, '0.0.0.0')
+	})
+	.catch((error) => {
+		logger.error(error)
+		throw error
+	})
+	.catch((error) => {
+		server.close()
+		logger.info('Server shutdown')
+		throw error
+	})
+	.catch((error) => {
+		return mongoUtil.close()
+	})
 
 function normalizePort(val) {
 	var port = parseInt(val, 10)

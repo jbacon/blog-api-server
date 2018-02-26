@@ -1,5 +1,6 @@
+var path = require('path')
 var mongodb = require('mongodb')
-var CustomError = require('../common/errorUtil')
+var CustomError = require(path.resolve('.', 'common/utils/error.js'))
 var mongoClient
 
 exports.connect = async (url) => {
@@ -7,6 +8,7 @@ exports.connect = async (url) => {
 		mongoClient = await mongodb.MongoClient.connect(url, {
 			ignoreUndefined: true,
 			serializeFunctions: true
+			// ssl: false
 		})
 	}
 }
