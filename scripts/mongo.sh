@@ -21,7 +21,8 @@ ${HOME}/mongodb-replicaset \
 
 rm -r ${HOME}/mongodb-replicaset/
 
-kubectl apply -f ${HOME}/mongodb-spec.yaml
+kubectl --server=${K8S_SERVER} --token=${K8S_TOKEN} --certificate-authority=${K8S_CA_CERT_PATH} --namespace=${K8S_NAMESPACE} \
+apply -f ${HOME}/mongodb-spec.yaml
 
 # kubectl expose pod mongodb-mongodb-replicaset-0 --port 27017 --protocol=TCP --name=mongodb-replicaset-0 || true
 # kubectl expose pod mongodb-mongodb-replicaset-1 --port 27017 --protocol=TCP --name=mongodb-replicaset-1 || true
