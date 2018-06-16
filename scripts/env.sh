@@ -22,7 +22,7 @@ then
 	export K8S_NAMESPACE='default'
 	export K8S_VERSION='v1.10.2' #$(curl --silent --ssl --cacert ${K8S_CA_CERT_PATH} ${K8S_SERVER}'/version' | jq -r '.gitVersion' | cut -f1 -d"-")
 
-	curl -LO https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION}/bin/darwin/amd64/kubectl
+	curl -LO https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION}/bin/linux/amd64/kubectl
 	chmod +x ./kubectl
 	sudo mv ./kubectl /usr/local/bin/kubectl
 	alias kubectl='kubectl --server=${K8S_SERVER} --token=${K8S_TOKEN} --certificate-authority=${K8S_CA_CERT_PATH} --namespace=${K8S_NAMESPACE}'
