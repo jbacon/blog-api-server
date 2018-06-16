@@ -39,10 +39,10 @@ before_deploy:
   - echo "Before Deploy..."
 deploy:
   provider: script
-  script: if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash ./scripts/publish.sh; fi'
+  script: if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash ./scripts/publish.sh; fi
   on:
     branch: master
   skip_cleanup: true
 after_deploy:
-  - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash ./scripts/mongo.sh; fi'
-  - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash ./scripts/rollout.sh; fi'
+  - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash ./scripts/mongo.sh; fi
+  - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash ./scripts/rollout.sh; fi
