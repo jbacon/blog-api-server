@@ -14,7 +14,14 @@ then
 	echo -n "${K8S_CA_CERT}" > ${K8S_CA_CERT_PATH}
 	export K8S_SERVER='https://35.227.175.60'
 	export K8S_NAMESPACE='default'
-	export K8S_VERSION=$(curl --silent --ssl --cacert ${K8S_CA_CERT_PATH} ${K8S_SERVER}'/version' | jq -r '.gitVersion' | cut -f1 -d"-")
+	
+	export K8S_CA_CERT_PATH=${HOME}/ca.cert
+	echo -n "${K8S_CA_CERT}" > ${K8S_CA_CERT_PATH}
+
+	export K8S_SERVER='https://35.227.175.60'
+	export K8S_NAMESPACE='default'
+	export K8S_VERSION='v1.10.2' #$(curl --silent --ssl --cacert ${K8S_CA_CERT_PATH} ${K8S_SERVER}'/version' | jq -r '.gitVersion' | cut -f1 -d"-")
+
 	curl -LO https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION}/bin/darwin/amd64/kubectl
 	chmod +x ./kubectl
 	sudo mv ./kubectl /usr/local/bin/kubectl
