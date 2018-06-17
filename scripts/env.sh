@@ -18,7 +18,7 @@ then
 	chmod +x ./kubectl
 	sudo mv ./kubectl /usr/local/bin/kubectl
 
-	curl  -sLo https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > ${HOME}/get_helm.sh
+	curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > ${HOME}/get_helm.sh
 	chmod 700 ${HOME}/get_helm.sh
 	source ${HOME}/get_helm.sh  --version 'v2.9.1'
 
