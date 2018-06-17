@@ -18,6 +18,10 @@ then
 	chmod +x ./kubectl
 	sudo mv ./kubectl /usr/local/bin/kubectl
 
+	curl  -sLo https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > ${HOME}/get_helm.sh
+	chmod 700 ${HOME}/get_helm.sh
+	source ${HOME}/get_helm.sh  --version 'v2.9.1'
+
 	export MONGODB_ADMIN_USER=$(
 	kubectl --server=${K8S_SERVER} --token=${K8S_TOKEN} --certificate-authority=${K8S_CA_CERT_PATH} --namespace=${K8S_NAMESPACE} \
 	get secrets mongodb-auth-admin-credentials -o json \
