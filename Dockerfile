@@ -37,9 +37,4 @@ ENV NODE_ENV=${NODE_ENV}
 
 RUN npm install
 
-EXPOSE 3000
-EXPOSE 9229
-
-VOLUME ["${PORTFOLIO_HOME}/logs/"]
-
 CMD npm run ${NODE_ENV}

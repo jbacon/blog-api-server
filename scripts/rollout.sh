@@ -1,4 +1,6 @@
-#!/bin/bash -e -o pipefail
+#!/bin/bash
+set -e
+set -o pipefail
 
 helm template \
 --kube-version ${K8S_VERSION} \
