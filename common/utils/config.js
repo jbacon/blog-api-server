@@ -11,7 +11,7 @@ const configFile = require(path.resolve('.', 'configs-'+process.env.NODE_ENV+'.j
 const confPass = process.env.PORTFOLIO_CONFIG_PASSWORD || _throw('Missing environment variable "PORTFOLIO_CONFIG_PASSWORD", which is required for decrypting the config file!')
 
 // CONFIGS - FROM FILE
-exports.logPath 				= process.env.PORTFOLIO_LOG_PATH 												|| configFile.logPath 					|| './logs'
+exports.logPath 				= process.env.PORTFOLIO_LOG_PATH 												|| configFile.logPath 					|| path.resolve('.', 'logs')
 exports.jwtSecret 				= cryptoUtil.decrypt(confPass, process.env.PORTFOLIO_JWT_SECRET 				|| configFile.jwtSecret 				|| _throw('Config Missing "jwtSecret"'))
 exports.adminEmail 				= process.env.PORTFOLIO_ADMIN_EMAIL 											|| configFile.adminEmail 				|| _throw('Config Missing "adminEmail"')
 exports.adminNameFirst 			= process.env.PORTFOLIO_ADMIN_NAME_FIRST 										|| configFile.adminNameFirst 			|| _throw('Config Missing "adminNameFirst"')
