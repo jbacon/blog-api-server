@@ -14,17 +14,13 @@ then
 	echo -n ${K8S_CA_CERT} | base64 --decode > ${K8S_CA_CERT_PATH}
 	export K8S_TOKEN=$(echo -n ${K8S_TOKEN} | base64 --decode)
 
-	if type kubectl 2>/dev/null; then
 	curl -LO https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION}/bin/linux/amd64/kubectl
 	chmod +x ./kubectl
 	sudo mv ./kubectl /usr/local/bin/kubectl
-	fi
-	if type helm 2>/dev/null; then
 	curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > ${HOME}/get_helm.sh
 	chmod 700 ${HOME}/get_helm.sh
 	source ${HOME}/get_helm.sh  --version 'v2.9.1'
 	helm init --client-only
-	fi
 
 	export DOCKER_HUB_PASSWORD=$(
 	kubectl --server=${K8S_SERVER} --token=${K8S_TOKEN} --certificate-authority=${K8S_CA_CERT_PATH} --namespace=${K8S_NAMESPACE} \
