@@ -1,7 +1,7 @@
 apiVersion: v1
-name: portfolio
-description: A helm chart for packaging my portfolio website application
+name: lets-encrypt-cert-renewer
+description: A helm chart for privisioning a custom lets enecrypt cert renewer on kubernetes
 version: "1.0"
 maintainers:
   - name: Josh Bacon
-    email: josh.l.bacon@nordstrom.com
+    email: jbacon@zagmail.gonzaga.edu

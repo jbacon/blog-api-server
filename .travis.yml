@@ -14,19 +14,23 @@ branches:
 #     - "node_modules"
 env:
   global:
-    NODE_ENV='production'
+    SET_NODE_ENV='production'
+    TECH_HUB_PORTFOLIO_ENV='production'
 # addons:
 #   ssh_known_hosts: portfolioapi.joshbacon.name
 #   ssh_known_hosts: portfolio.joshbacon.name
 before_install:
-  - source ./scripts/env.sh
+  - echo "Before Install..."
 install:
-  - bash ./scripts/install.sh
+  - echo "Install..."
+  - ${PWD}/scripts/install.sh
 before_script:
-  - bash ./scripts/lint.sh
+  - echo "Before Script..."
+  - ${PWD}/scripts/lint.sh
 script:
-  - bash ./scripts/test.sh
-  - bash ./scripts/build.sh
+  - echo "Script..."
+  - ${PWD}/scripts/test.sh
+  - ${PWD}/scripts/build.sh
 after_script:
   - echo "After Script..."
 before_cache:
@@ -37,12 +41,58 @@ after_failure:
   - echo "After Failure..."
 before_deploy:
   - echo "Before Deploy..."
+  - echo -n ${K8S_CA_CERT} | base64 --decode > ${HOME}/ca.cert
+  - curl -LO https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION}/bin/linux/amd64/kubectl
+  - chmod +x ./kubectl
+  - sudo mv ./kubectl /usr/local/bin/kubectl
+  - |
+    kubectl config set-cluster cluster \
+    --certificate-authority=${HOME}/ca.cert \
+    --server=${K8S_SERVER} \
+    --embed-certs
+  - |
+    kubectl config set-credentials user \
+    --token=$(echo -n ${K8S_TOKEN} | base64 --decode)
+  - |
+    kubectl config set-context context \
+    --cluster='cluster' \
+    --user='user' \
+    --namespace=${K8S_NAMESPACE}
+  - kubectl config use-context context
+  - curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > ${HOME}/get_helm.sh
+  - chmod 700 ${HOME}/get_helm.sh
+  - source ${HOME}/get_helm.sh  --version ${HELM_VERSION}
+  - helm init --client-only
+  - |
+    docker login \
+    --username ${DOCKER_HUB_USERNAME} \
+    --password ${DOCKER_HUB_PASSWORD}
 deploy:
   provider: script
-  script: if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash ./scripts/publish.sh; fi
+  script: docker push ${DOCKER_HUB_USERNAME}/portfolio-api:latest
   on:
     branch: master
   skip_cleanup: true
 after_deploy:
-  - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash ./scripts/mongo.sh; fi
-  - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash ./scripts/rollout.sh; fi
+  - |
+    helm template \
+    --kube-version $(${K8S_VERSION}| cut -c2-) \
+    --namespace=${K8S_NAMESPACE} \
+    --name portfolioapi-joshbacon-name \
+    --set "nodeEnv=${NODE_ENV}" \
+    --set "gkeStaticExternalIpId=${GKE_STATIC_EXTERNAL_IP_ID}" \
+    --set "tlsSecret=${TLS_SECRET}" \
+    --set "acmeSecret=${ACME_SECRET}" \
+    ${PWD}/helm-chart/ | kubectl apply -f -
+  - git clone https://github.com/jbacon/lets-encrypt-k8s-cert-renewer.git
+  - |
+    helm template \
+    --kube-version=$(${K8S_VERSION}| cut -c2-) \
+    --namespace="${K8S_NAMESPACE}" \
+    --name='portfolioapi-joshbacon-name-cert-renewer' \
+    --set='domains=portfolioapi.joshbacon.name' \
+    --set='emails=jbacon@zagmail.gonzaga.edu' \
+    --set="certSecret=${CERT_SECRET}" \
+    --set="tlsSecret=${TLS_SECRET}" \
+    --set="acmeSecret=${ACME_SECRET}" \
+    ${PWD}/lets-encrypt-k8s-cert-renewer/ | kubectl apply -f -

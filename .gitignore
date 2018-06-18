@@ -4,3 +4,5 @@ data/
 logs/
 .config/
 .npm/
+configs-development.json
+configs-production.json

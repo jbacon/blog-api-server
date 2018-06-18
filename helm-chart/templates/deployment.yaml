@@ -7,7 +7,6 @@ metadata:
     app: {{ template "fullname" . }}-api
     chart: {{ .Chart.Name }}-{{ .Chart.Version }}
     release: {{ .Release.Name }}
-    time: {{ .Release.Time.Seconds | quote }}
 spec:
   replicas: {{ .Values.replicas }}
   strategy:
@@ -24,7 +23,6 @@ spec:
         app: {{ template "fullname" . }}-api
         chart: {{ .Chart.Name }}-{{ .Chart.Version }}
         release: {{ .Release.Name }}
-        time: {{ .Release.Time.Seconds | quote }}
     spec:
       restartPolicy: Always
       dnsPolicy: ClusterFirst
@@ -55,6 +53,10 @@ spec:
             - name: code
               mountPath: /home/node/app/
               # readOnly: true
+            {{- end }}
+            {{- if .Values.acmeSecret }}
+            - name: cert-acme-challenge
+              mountPath: /home/node/app/public/.well-known/acme-challenge/
             {{- end }}
           ports:
             - name: api
@@ -92,9 +94,14 @@ spec:
             successThreshold: 1
             timeoutSeconds: 3
       volumes:
+        {{- if .Values.acmeSecret }}
+        - name: cert-acme-challenge
+          secret:
+            secretName: {{ .Values.certAcmeChallengeSecret }}
+        {{- end }}
         {{- if .Values.codeOverrideDirectory }}
         - name: code
           hostPath:
             type: Directory
-            path: {{- .Values.codeOverrideDirectory }}
+            path: {{ .Values.codeOverrideDirectory }}
         {{- end }}

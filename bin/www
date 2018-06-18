@@ -18,7 +18,7 @@ var asyncWrap = require(path.resolve('.', 'common/utils/async.js')).asyncWrap
 
 var app = express()
 app.disable('x-powered-by')
-app.use(express.static(path.resolve('.', 'public')))
+app.use(express.static(path.resolve('.', 'public'),{ dotfiles: 'allow' }))
 app.use(favicon(path.resolve('.', 'favicon.ico')))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true })) // Extended true always nested objects in req.body
@@ -74,27 +74,47 @@ var port = normalizePort(commonConfig.serverPort || "3000")
 
 var server = http.createServer(app)
 
-mongoUtil.connect(commonConfig.mongoDbUrl)
-	.then(() => { logger.info('Connected to MongoDB ')})
-	.then(mongoUtil.configureDB)
-	.then(() => { logger.info('Configured MongoDB ')})
-	.then(() => {
-		server.on("error", onError)
-		server.on("listening", onListening)
-		server.listen(port, '0.0.0.0')
-	})
-	.catch((error) => {
-		logger.error(error)
-		throw error
-	})
-	.catch((error) => {
-		server.close()
-		logger.info('Server shutdown')
-		throw error
-	})
-	.catch((error) => {
-		return mongoUtil.close()
-	})
+async function connectMongo() {
+	mongoUtil.connect(commonConfig.mongoDbUrl)
+		.then(mongoUtil.configureDB)
+		.then(() => {
+			server.on("error", onError)
+			server.on("listening", onListening)
+			server.listen(port, '0.0.0.0')
+		})
+		.catch((error) => {
+			logger.error(error)
+			throw error
+		})
+		.catch((error) => {
+			server.close()
+			logger.info('Server shutdown')
+			throw error
+		})
+		.catch(mongoUtil.close)
+		.catch(connectMongo)
+}
+connectMongo()
+
+// mongoUtil.connect(commonConfig.mongoDbUrl)
+// 	.then(mongoUtil.configureDB)
+// 	.then(() => {
+// 		server.on("error", onError)
+// 		server.on("listening", onListening)
+// 		server.listen(port, '0.0.0.0')
+// 	})
+// 	.catch((error) => {
+// 		logger.error(error)
+// 		throw error
+// 	})
+// 	.catch((error) => {
+// 		server.close()
+// 		logger.info('Server shutdown')
+// 		throw error
+// 	})
+// 	.catch((error) => {
+// 		return mongoUtil.close()
+// 	})
 
 function normalizePort(val) {
 	var port = parseInt(val, 10)

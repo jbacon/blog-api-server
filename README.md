@@ -1,31 +1,29 @@
 [![Build Status](https://travis-ci.org/jbacon/blog-api-server.svg?branch=master)](https://travis-ci.org/jbacon/blog-api-server)
 
-# Blog Website API Server: [https://portfolioapi.joshbacon.name](https://portfolioapi.joshbacon.name)
+# My Blog's API Server: [https://portfolioapi.joshbacon.name](https://portfolioapi.joshbacon.name)
 
-## Techincal Features:
+## Tech:
 - [NodeJS](https://nodejs.org/en/)
 - [ExpressJS](https://expressjs.com/)
 - [MongoDB](https://www.mongodb.com/)
-- Hosted on EC2.
+- [Kubernetes](https://kubernetes.io/)
+- [Helm](https://helm.sh/)
+- [TravisCI](https://travis-ci.org/jbacon/blog-api-server)
 
-## What Does the API Do?
-- Comment System
+## What Does it Do?
+- Custom Comment System
 - User Accounts
 - User Authentication & Authorization
-- Email Notifications
+- Notifications
 
-## Helpful One-Liners:
+## Built-in Utilties:
 
-### Encrypt/Decrypt via [cryptoUtil](./common/utils/cryptoUtil.js) lib
+### Crypto:
+The lib: [cryptoUtil.js](./common/utils/cryptoUtil.js)
+The script: [crypt.sh](./script/crypt.sh)
 ```bash
-MY_PLAIN_TEXT="hello world"
-MY_PASSWORD=example_secret_password
-MY_ENCRYPTED_TEXT=$(node -p 'let c=require("./common/utils/crypto.js"); c.encrypt("'${MY_PASSWORD}'","'${MY_PLAIN_TEXT}'");')
-MY_DECRYPTED_TEXT=$(node -p 'let c=require("./common/utils/crypto.js"); c.decrypt("'${MY_PASSWORD}'","'${MY_ENCRYPTED_TEXT}'");')
+bash ./script/crypt.sh --help
 ```
-- My configs files, [configs-local.json]() & [configs-prod.json](), contain only encrypted secrets, so they are safe to store in GitHub
-
-### SSH Keys (w/o password)
-```bash
-ssh-keygen -t rsa -C ${MY_EMAIL} -b 4096 -f ssh
-```
+- My configs files are encrypted, [configs-development.json](./configs-development.json) & [configs-production.json](./configs-production.json), so I can version in Git
+- Encrypt Configs ```bash scripts/crypt.sh --password "${TECH_HUB_PORTFOLIO_CONFIG_PASSWORD}" encrypt --text "$(cat configs-development.json | base64)" > configs-development.txt```
+- Decrypt Configs ```bash scripts/crypt.sh --password "${TECH_HUB_PORTFOLIO_CONFIG_PASSWORD}" decrypt --text "$(cat configs-development.txt)" | base64 --decode > configs-development.json```
