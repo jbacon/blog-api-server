@@ -23,14 +23,14 @@ before_install:
   - echo "Before Install..."
 install:
   - echo "Install..."
-  - ${PWD}/scripts/install.sh
+  - bash ${PWD}/scripts/install.sh
 before_script:
   - echo "Before Script..."
-  - ${PWD}/scripts/lint.sh
+  - bash ${PWD}/scripts/lint.sh
 script:
   - echo "Script..."
-  - ${PWD}/scripts/test.sh
-  - ${PWD}/scripts/build.sh
+  - bash ${PWD}/scripts/test.sh
+  - bash ${PWD}/scripts/build.sh
 after_script:
   - echo "After Script..."
 before_cache:
