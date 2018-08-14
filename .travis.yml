@@ -76,7 +76,7 @@ deploy:
 after_deploy:
   - |
     helm template \
-    --kube-version $(echo -n ${K8S_VERSION}| cut -c2-) \
+    --kube-version=$(echo -n ${K8S_VERSION}| cut -c2-) \
     --namespace=${K8S_NAMESPACE} \
     --name portfolioapi-joshbacon-name \
     --set "nodeEnv=${NODE_ENV}" \
@@ -87,7 +87,7 @@ after_deploy:
   - git clone https://github.com/jbacon/lets-encrypt-k8s-cert-renewer.git
   - |
     helm template \
-    --kube-version=echo -n ${K8S_VERSION}| cut -c2-) \
+    --kube-version=$(echo -n ${K8S_VERSION}| cut -c2-) \
     --namespace="${K8S_NAMESPACE}" \
     --name='portfolioapi-joshbacon-name-cert-renewer' \
     --set='domains=portfolioapi.joshbacon.name' \
