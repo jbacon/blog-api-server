@@ -97,7 +97,7 @@ spec:
         {{- if .Values.acmeSecret }}
         - name: cert-acme-challenge
           secret:
-            secretName: {{ .Values.certAcmeChallengeSecret }}
+            secretName: {{ .Values.acmeSecret }}
         {{- end }}
         {{- if .Values.codeOverrideDirectory }}
         - name: code
