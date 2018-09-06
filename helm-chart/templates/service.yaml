@@ -19,14 +19,14 @@ spec:
     - name: api
       port: 3000
       protocol: TCP
-      {{- if .Values.nodePort.api }}
+      {{- if .Values.nodePort }}
       nodePort: {{ .Values.nodePort.api }}
       {{- end }}
     {{- if eq .Values.nodeEnv "development" }}
     - name: debug
       port: 9229
       protocol: TCP
-      {{- if .Values.nodePort.debug }}
+      {{- if .Values.nodePort }}
       nodePort: {{ .Values.nodePort.debug }}
       {{- end }}
     {{- end }}

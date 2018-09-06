@@ -3,12 +3,12 @@ imagePullPolicy: Always
 imagePullSecrets:
 # - name: secret-name
 replicas: 1
-nodeEnv: development
+# nodeEnv: development
 nodePort:
-  api: 31637
-  debug: 31638
+  # api: 31637
+  # debug: 31638
 configSecret: portfolioapi-joshbacon-name # kube secret name holding password to baked-in config file
-codeOverrideDirectory: /Users/ap5s/Development/github.com/jbacon/blog-api-server/ # This enables debug development mode
+# codeOverrideDirectory: /Users/ap5s/Development/github.com/jbacon/blog-api-server/ # This enables debug development mode
 # gkeStaticExternalIpId: "techhub-ip" # This enables Ingress creation on the GKE cluster
 # tlsSecret: portfolio-api-tls
 # acmeSecret: portfolioapi-joshbacon-name-cert-acme-challenge
@@ -16,6 +16,6 @@ resources:
   # limits:
   #   cpu: 500m
   #   memory: 512Mi
-  requests:
-    cpu: 20m
+  # requests:
+    # cpu: 20m
     # memory: 128Mi

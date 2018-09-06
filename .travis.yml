@@ -83,6 +83,7 @@ after_deploy:
     --set "gkeStaticExternalIpId=${GKE_STATIC_EXTERNAL_IP_ID}" \
     --set "tlsSecret=${TLS_SECRET}" \
     --set "acmeSecret=${ACME_SECRET}" \
+    --set "configSecret=portfolioapi-joshbacon-name" \
     ${PWD}/helm-chart/ | kubectl apply -f -
   - git clone https://github.com/jbacon/lets-encrypt-k8s-cert-renewer.git
   - |
