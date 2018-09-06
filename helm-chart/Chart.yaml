@@ -1,6 +1,6 @@
 apiVersion: v1
-name: lets-encrypt-cert-renewer
-description: A helm chart for privisioning a custom lets enecrypt cert renewer on kubernetes
+name: blog-api-server
+description: A helm chart for privisioning a custom blog api server on kubernetes
 version: "1.0"
 maintainers:
   - name: Josh Bacon
