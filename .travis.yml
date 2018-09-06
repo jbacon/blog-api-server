@@ -91,8 +91,8 @@ after_deploy:
     --kube-version=$(echo -n ${K8S_VERSION}| cut -c2-) \
     --namespace="${K8S_NAMESPACE}" \
     --name='portfolioapi-joshbacon-name-cert-renewer' \
-    --set='domains=portfolioapi.joshbacon.name' \
-    --set='emails=jbacon@zagmail.gonzaga.edu' \
+    --set='domains={portfolioapi.joshbacon.name}' \
+    --set='emails={jbacon@zagmail.gonzaga.edu}' \
     --set="certSecret=${CERT_SECRET}" \
     --set="tlsSecret=${TLS_SECRET}" \
     --set="acmeSecret=${ACME_SECRET}" \
