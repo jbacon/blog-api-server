@@ -92,7 +92,7 @@ after_deploy:
     --namespace="${K8S_NAMESPACE}" \
     --name='portfolioapi-joshbacon-name-cert-renewer' \
     --set='domains={portfolioapi.joshbacon.name}' \
-    --set='emails={jbacon@zagmail.gonzaga.edu}' \
+    --set='email=jbacon@zagmail.gonzaga.edu' \
     --set="certSecret=${CERT_SECRET}" \
     --set="tlsSecret=${TLS_SECRET}" \
     --set="acmeSecret=${ACME_SECRET}" \
