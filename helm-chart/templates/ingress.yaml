@@ -6,7 +6,7 @@ metadata:
   {{- if .Values.gkeStaticExternalIpId }}
   annotations:
     kubernetes.io/ingress.class: gce
-    kubernetes.io/ingress.allow-http: "true"
+    kubernetes.io/ingress.allow-http: "false"
     kubernetes.io/ingress.global-static-ip-name: {{ .Values.gkeStaticExternalIpId }}
   {{- end }}
 spec:
