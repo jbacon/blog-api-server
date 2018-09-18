@@ -94,6 +94,6 @@ after_deploy:
     --set='domains={portfolioapi.joshbacon.name}' \
     --set='email=jbacon@zagmail.gonzaga.edu' \
     --set="certSecret=${CERT_SECRET}" \
-    --set="tlsSecret=${TLS_SECRET}" \
-    --set="acmeSecret=${ACME_SECRET}" \
+    --set="hookConfigs.kube.tlsSecret=${TLS_SECRET}" \
+    --set="hookConfigs.kube.acmeSecret=${ACME_SECRET}" \
     ${PWD}/lets-encrypt-k8s-cert-renewer/ | kubectl apply -f -
