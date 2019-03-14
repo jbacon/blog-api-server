@@ -7,6 +7,6 @@ kubectl create secret generic portfolioapi-joshbacon-name \
 --output yaml
 helm template \
 --kube-version $(kubectl version --output json | jq -r '.serverVersion.gitVersion') \
---namespace='default' \
+--namespace='production' \
 --name portfolioapi-joshbacon-name \
 ${PWD}/helm-chart/

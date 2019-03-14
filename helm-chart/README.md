@@ -7,7 +7,7 @@ This chart bootstraps my portfolio web app on [Kubernetes](http://kubernetes.io)
 
 ### GKE (PROD)
 ```bash
-helm template --name portfolioapi-joshbacon-name --namespace=default --values ./values-gke.yaml ./ | kubectl apply -f -
+helm template --name portfolioapi-joshbacon-name --namespace=production --values ./values-gke.yaml ./ | kubectl apply -f -
 ```
 
 ### LOAL (DEV)
